@@ -77,8 +77,8 @@ The method ```generate(timestamp: Date)``` can now be used on the generator inst
 
 ```kotlin
 timeBasedOneTimePasswordGenerator.generate() // Will use System.currentTimeMillis()
-timeBasedOneTimePasswordGenerator.generate(timestamp = 59)
-timeBasedOneTimePasswordGenerator.generate(timestamp = 12345)
+timeBasedOneTimePasswordGenerator.generate(timestamp = Date(59))
+timeBasedOneTimePasswordGenerator.generate(timestamp = Date(1234567890))
 ...
 ```
 
