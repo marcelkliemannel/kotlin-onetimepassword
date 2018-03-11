@@ -13,7 +13,7 @@ The implementations are based on the RFCs:
 
 ## Dependency
 
-The library is available at [Maven Central](http://repo1.maven.org/maven2/com/marcelkliemannel/kotlin-onetimepassword/1.0.0/):
+The library is available at [Maven Central](https://mvnrepository.com/artifact/com.marcelkliemannel/kotlin-onetimepassword):
 
 ### Gradle
 
@@ -86,7 +86,7 @@ Again, there is a helper method ```isValid(code: String, timestamp: Date)``` ava
 
 ### Google Authenticator
 
-The Google Authenticator generator is available through the class ```GoogleAuthenticator```. It is a decorator for the TOTP generator with fixed code digits value of 6, SHA1 as HMAC algorithm and a time window of 30 seconds. The constructor just takes the secret as an argument. **Notice that the secret must be Base32-encoded!**
+The Google Authenticator generator is available through the class ```GoogleAuthenticator```. It is a decorator for the TOTP generator with a fixed code digits value of 6, SHA1 as HMAC algorithm and a time window of 30 seconds. The constructor just takes the secret as an argument. **Notice that the secret must be Base32-encoded!**
 
 ```kotlin
 val googleAuthenticator = GoogleAuthenticator(secret = "J52XEU3IMFZGKZCTMVRXEZLU") // "OurSharedSecret" Base32-encoded
@@ -114,10 +114,10 @@ randomSecretGenerator.createRandomSecret(1234) // 1234 Bytes secret
 
 **MIT License**
 
-Copyright 2018 Marcel Kliemannel
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+> Copyright 2018 Marcel Kliemannel
+> 
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+> 
+> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+> 
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
