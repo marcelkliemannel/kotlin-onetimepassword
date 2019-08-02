@@ -1,4 +1,4 @@
-package com.marcelkliemannel.kotlinonetimepassword
+package dev.turingcomplete.kotlinonetimepassword
 
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -17,7 +17,7 @@ open class TimeBasedOneTimePasswordGenerator(secret: ByteArray, var config: Time
    */
   fun generate(timestamp: Date = Date(System.currentTimeMillis())): String {
     val counter = if (config.timeStep == 0L) {
-      0 // Avoiding a dive by zero exception
+      0 // Avoiding a divide by zero exception
     }
     else {
       timestamp.time.div(TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit))

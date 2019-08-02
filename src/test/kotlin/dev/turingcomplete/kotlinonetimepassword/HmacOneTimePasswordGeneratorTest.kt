@@ -1,4 +1,4 @@
-package com.marcelkliemannel.kotlinonetimepassword
+package dev.turingcomplete.kotlinonetimepassword
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
@@ -29,7 +29,7 @@ class HmacOneTimePasswordGeneratorTest {
 
   @ParameterizedTest(name = "{0}, code digits: {1}, counter: {2}, code: {3}, secret: {4}")
   @DisplayName("Multiple algorithms, code digits, counter and secrets")
-  @CsvFileSource(resources = ["/multipleHmacOneTimePasswordTestVectors.csv"])
+  @CsvFileSource(resources = ["/dev/turingcomplete/multipleHmacOneTimePasswordTestVectors.csv"])
   fun multipleTestVectors(hmacAlgorithm: String, codeDigits: Int, counter: Long, expectedCode: String, secret: String) {
     validateWithExpectedCode(counter, expectedCode, codeDigits, secret, HmacAlgorithm.valueOf(hmacAlgorithm))
   }

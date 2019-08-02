@@ -1,4 +1,4 @@
-package com.marcelkliemannel.kotlinonetimepassword
+package dev.turingcomplete.kotlinonetimepassword
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
@@ -10,7 +10,7 @@ import java.util.*
 class GoogleAuthenticatorTest {
   @ParameterizedTest(name = "Timestamp: {0}, expected code: {1}")
   @DisplayName("Multiple Test Vectors")
-  @CsvFileSource(resources = ["/googleAuthenticatorTestVectors.csv"])
+  @CsvFileSource(resources = ["/dev/turingcomplete/googleAuthenticatorTestVectors.csv"])
   fun zeroCodeDigitsTest(timestamp: Long, expectedCode: String) {
     val googleAuthenticator = GoogleAuthenticator("Leia")
     Assertions.assertEquals(expectedCode, googleAuthenticator.generate(Date(timestamp)))

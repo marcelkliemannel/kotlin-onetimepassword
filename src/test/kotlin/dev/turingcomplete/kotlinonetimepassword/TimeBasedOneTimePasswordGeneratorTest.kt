@@ -1,4 +1,4 @@
-package com.marcelkliemannel.kotlinonetimepassword
+package dev.turingcomplete.kotlinonetimepassword
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
@@ -58,7 +58,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
 
   @ParameterizedTest
   @DisplayName("Multiple algorithms, code digits, timestamps, sects, time steps and time step units")
-  @CsvFileSource(resources = ["/multipleTimeBasedOneTimePasswordTestVectors.csv"])
+  @CsvFileSource(resources = ["/dev/turingcomplete/multipleTimeBasedOneTimePasswordTestVectors.csv"])
   fun multipleTestVectors(hmacAlgorithmName: String, codeDigits: Int, timestamp: Long, expectedCode: String,
                           secret: String, timeStep: Long, timeStepUnit: String) {
 
@@ -68,7 +68,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
 
   @ParameterizedTest(name = "{0}, timestamp: {1}, expected code: {2}")
   @DisplayName("RFC 6238 Appendix B Test Vectors")
-  @CsvFileSource(resources = ["/rfc6238AppendixBTimeBasedOneTimePasswordTestVectors.csv"])
+  @CsvFileSource(resources = ["/dev/turingcomplete/rfc6238AppendixBTimeBasedOneTimePasswordTestVectors.csv"])
   fun rfc4226AppendixDTestCases(hmacAlgorithmName: String, timestamp: Long, expectedCode: String, secret: String) {
     val timestampDate = Date(timestamp.times(1000))  // The times in original test vectors are in seconds.
     validateWithExpectedCode(HmacAlgorithm.valueOf(hmacAlgorithmName), 8, timestampDate, 30, TimeUnit.SECONDS, expectedCode, secret)

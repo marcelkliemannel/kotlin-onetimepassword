@@ -1,4 +1,4 @@
-package com.marcelkliemannel.kotlinonetimepassword
+package dev.turingcomplete.kotlinonetimepassword
 
 /**
  * @property hashBytes The length of the returned hash produced by the algorithm.

@@ -1,4 +1,4 @@
-package com.marcelkliemannel.kotlinonetimepassword
+package dev.turingcomplete.kotlinonetimepassword
 
 /**
  * @property codeDigits The RFC 4226 requires a code digits value between 6 and 8, to assure a good security trade-off.

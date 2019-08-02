@@ -1,4 +1,4 @@
-package com.marcelkliemannel.kotlinonetimepassword
+package dev.turingcomplete.kotlinonetimepassword
 
 import org.apache.commons.codec.binary.Base32
 import java.util.*
@@ -17,7 +17,7 @@ class GoogleAuthenticator(secret: String) {
     val hmacAlgorithm = HmacAlgorithm.SHA1
     val config = TimeBasedOneTimePasswordConfig(30, TimeUnit.SECONDS, 6, hmacAlgorithm)
 
-    timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(Base32().decode(secret), config);
+    timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(Base32().decode(secret), config)
   }
 
   /**

@@ -1,5 +1,7 @@
-package com.marcelkliemannel.kotlinonetimepassword
+package dev.turingcomplete.kotlinonetimepassword
 
+import dev.turingcomplete.kotlinonetimepassword.HmacAlgorithm
+import dev.turingcomplete.kotlinonetimepassword.RandomSecretGenerator
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assumptions
 import org.junit.jupiter.api.DisplayName
