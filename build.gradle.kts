@@ -33,6 +33,10 @@ dependencies {
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jUnitVersion")
 }
 
+tasks.withType<Test> {
+  useJUnitPlatform()
+}
+
 publishing {
   publications {
     create<MavenPublication>(project.name) {
