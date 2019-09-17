@@ -1,7 +1,9 @@
 package dev.turingcomplete.kotlinonetimepassword
 
 /**
- * @property hashBytes The length of the returned hash produced by the algorithm.
+ * Available "keyed-hash message authentication code" algorithms.
+ *
+ * @property hashBytes the length of the returned hash produced by the algorithm.
  */
 enum class HmacAlgorithm(val macAlgorithmName: String, val hashBytes: Int) {
   SHA1("HmacSHA1", 20),

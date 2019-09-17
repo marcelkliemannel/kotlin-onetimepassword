@@ -4,20 +4,24 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
- * Implementation of RFC 6238 "TOTP: Time-Based One-Time Password Algorithm"
+ * Generator for the RFC 6238 "TOTP: Time-Based One-Time Password Algorithm"
  * (https://tools.ietf.org/html/rfc6238)
  *
- * @param secret The shared secret as a byte array.
+ * @property secret the shared secret as a byte array.
+ * @property config the configuration for this generator.
  */
-open class TimeBasedOneTimePasswordGenerator(secret: ByteArray, var config: TimeBasedOneTimePasswordConfig){
+open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, private val config: TimeBasedOneTimePasswordConfig){
   private val hmacOneTimePasswordGenerator: HmacOneTimePasswordGenerator = HmacOneTimePasswordGenerator(secret, config)
 
   /**
-   * @param timestamp The default value is the current system time.
+   * Generated a code as a TOTP one-time password.
+   *
+   * @param timestamp the challenge for the code. The default value is the
+   *                  current system time from [System.currentTimeMillis].
    */
   fun generate(timestamp: Date = Date(System.currentTimeMillis())): String {
     val counter = if (config.timeStep == 0L) {
-      0 // Avoiding a divide by zero exception
+      0 // To avoide a divide by zero exception
     }
     else {
       timestamp.time.div(TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit))
@@ -27,8 +31,11 @@ open class TimeBasedOneTimePasswordGenerator(secret: ByteArray, var config: Time
   }
 
   /**
-   * @param code The received code to validate.
-   * @param timestamp The default value is the current system time.
+   * Validates the given code.
+   *
+   * @param code the code calculated from the challenge to validate.
+   * @param timestamp the used challenge for the code. The default value is the
+   *                  current system time from [System.currentTimeMillis].
    */
   fun isValid(code: String, timestamp: Date = Date(System.currentTimeMillis())): Boolean {
     return code == generate(timestamp)
