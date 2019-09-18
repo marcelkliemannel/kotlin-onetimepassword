@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
  * SHA1; time step: 30 seconds and code digits: 6.
  *
  * @param base32secret the shared secret <b>that must already be Base32-encoded</b>
- *                     (use [Base32.encode]).
+ *                     (use [org.apache.commons.codec.binary.BaseNCodec.encode(byte[])]).
  */
 class GoogleAuthenticator(base32secret: String) {
   private val timeBasedOneTimePasswordGenerator: TimeBasedOneTimePasswordGenerator

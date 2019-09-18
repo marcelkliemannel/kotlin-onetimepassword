@@ -1,6 +1,7 @@
 plugins {
   `java-library`
   kotlin("jvm") version "1.3.41"
+  id("org.jetbrains.dokka") version "0.9.18"
 
   signing
   `maven-publish`
@@ -8,14 +9,44 @@ plugins {
 }
 
 group = "dev.turingcomplete"
-version = "1.1.0"
+version = "2.0.0"
 
 tasks.withType<Wrapper> {
   gradleVersion = "5.5.1"
 }
 
 repositories {
+  mavenLocal()
   mavenCentral()
+  jcenter()
+}
+
+tasks {
+  val sourcesJar by creating(Jar::class) {
+    group = "build"
+    archiveClassifier.set("sources")
+    from(sourceSets["main"].allSource)
+  }
+
+  val testsJar by creating(Jar::class) {
+    dependsOn(JavaPlugin.TEST_CLASSES_TASK_NAME)
+    group = "build"
+    archiveClassifier.set("tests")
+    from(sourceSets["test"].output)
+  }
+
+  val dokkaJar by creating(Jar::class) {
+    dependsOn("dokka")
+    group = "build"
+    archiveClassifier.set("javadoc")
+    from(getByPath("dokka").outputs)
+  }
+
+  artifacts {
+    add("archives", sourcesJar)
+    add("archives", testsJar)
+    add("archives", dokkaJar)
+  }
 }
 
 configure<JavaPluginExtension> {
@@ -41,23 +72,32 @@ publishing {
   publications {
     create<MavenPublication>(project.name) {
       from(components["java"])
+      setArtifacts(configurations.archives.get().allArtifacts)
     }
   }
 }
 
-/*
-  signing.keyId=
-  signing.password=
-  signing.secretKeyRingFile=
+/**
+ * See https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials
  */
 signing {
   sign(publishing.publications[project.name])
 }
 
-/*
-  nexusUsername=
-  nexusPassword=
+gradle.taskGraph.whenReady {
+  if (allTasks.any { it is Sign }) {
+    extra["signing.keyId"] = ""
+    extra["signing.password"] = ""
+    extra["signing.secretKeyRingFile"] = ""
+  }
+}
+
+/**
+ * see https://github.com/marcphilipp/nexus-publish-plugin/blob/master/README.md
  */
+ext["serverUrl"] = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+ext["nexusUsername"] = ""
+ext["nexusPassword"] = ""
 
 configure<PublishingExtension> {
   publications {
