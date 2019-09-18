@@ -15,7 +15,7 @@ The implementations are based on the RFCs:
 
 ## Dependency
 
-The library is available at [Maven Central](https://mvnrepository.com/artifact/com.marcelkliemannel/kotlin-onetimepassword):
+The library is available at [Maven Central](https://mvnrepository.com/artifact/dev.turingcomplete/kotlin-onetimepassword):
 
 ### Gradle
 
