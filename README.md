@@ -21,10 +21,10 @@ The library is available at [Maven Central](https://mvnrepository.com/artifact/d
 
 ```java
 // Groovy
-compile 'dev.turingcomplete:kotlin-onetimepassword:2.0.0'
+compile 'dev.turingcomplete:kotlin-onetimepassword:2.0.1'
 
 // Kotlin
-compile("dev.turingcomplete:kotlin-onetimepassword:2.0.0")
+compile("dev.turingcomplete:kotlin-onetimepassword:2.0.1")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ compile("dev.turingcomplete:kotlin-onetimepassword:2.0.0")
 <dependency>
     <groupId>dev.turingcomplete</groupId>
     <artifactId>kotlin-onetimepassword</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 
@@ -130,6 +130,23 @@ See the TOTP generator for the code generation ```generator(timestamp: Date)``` 
 
 There is also a helper method ```GoogleAuthenticator.createRandomSecret()``` that will return a 16-byte Base32-decoded random secret.
 
+#### Simulator Code
+
+The following code can be used to simulate the Google Authenticator. It prints a valid code for the secret `K6IPBHCQTVLCZDM2` every second.
+```kotlin
+fun main() {
+  val base64Secret = "K6IPBHCQTVLCZDM2"
+
+  Timer().schedule(object: TimerTask() {
+    override fun run() {
+      val timestamp = Date(System.currentTimeMillis())
+      val code = GoogleAuthenticator(base64Secret).generate(timestamp)
+      println("${SimpleDateFormat("HH:mm:ss").format(timestamp)}: $code")
+    }
+  }, 0, 1000)
+}
+```
+
 ### Random Secret Generator
 
 RFC 4226 recommends using a secret of the same length as the hash produced by the HMAC algorithm. The class ```RandomSecretGenerator``` can be used to generate such random shared secrets:
@@ -143,14 +160,12 @@ val secret2: ByteArray = randomSecretGenerator.createRandomSecret(HmacAlgorithm.
 val secret3: ByteArray = randomSecretGenerator.createRandomSecret(1234) // 1234-byte secret
 ```
 
-## License
+## Licensing
 
-**MIT License**
+Copyright (c) 2020 Marcel Kliemannel
 
-> Copyright 2019 Marcel Kliemannel
-> 
-> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-> 
-> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-> 
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Licensed under the **Apache License, Version 2.0** (the "License"); you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at <https://www.apache.org/licenses/LICENSE-2.0>.
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the [LICENSE](./LICENSE) for the specific language governing permissions and limitations under the License.

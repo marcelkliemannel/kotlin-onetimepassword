@@ -6,8 +6,10 @@ import java.util.concurrent.TimeUnit
 
 /**
  * This class is a decorator of the [TimeBasedOneTimePasswordGenerator] that
- * provides the default values used by the Google Authenticator: HMAC algorithm:
- * SHA1; time step: 30 seconds and code digits: 6.
+ * provides the default values used by the Google Authenticator:
+ * - HMAC algorithm: SHA1;
+ * - time step: 30 seconds;
+ * - and code digits: 6.
  *
  * @param base32secret the shared secret <b>that must already be Base32-encoded</b>
  *                     (use [org.apache.commons.codec.binary.BaseNCodec.encode(byte[])]).

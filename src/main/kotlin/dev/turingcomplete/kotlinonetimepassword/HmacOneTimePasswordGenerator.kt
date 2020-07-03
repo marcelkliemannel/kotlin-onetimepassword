@@ -16,7 +16,7 @@ import kotlin.math.pow
 open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
                                         private val config: HmacOneTimePasswordConfig) {
   /**
-   * Generated a code as a HOTP one-time password.
+   * Generates a code representing a HMAC-based one-time password.
    *
    * @return The generated code for the provided counter value. Note, that the
    *         code must be represented as a string because it can have trailing

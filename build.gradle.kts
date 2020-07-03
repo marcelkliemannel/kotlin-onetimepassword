@@ -1,18 +1,19 @@
+import java.net.URI
+
 plugins {
   `java-library`
   kotlin("jvm") version "1.3.41"
-  id("org.jetbrains.dokka") version "0.9.18"
+  id("org.jetbrains.dokka") version "0.10.1"
 
   signing
   `maven-publish`
-  id("de.marcphilipp.nexus-publish") version "0.2.0"
 }
 
 group = "dev.turingcomplete"
-version = "2.0.0"
+version = "2.0.1"
 
 tasks.withType<Wrapper> {
-  gradleVersion = "5.5.1"
+  gradleVersion = "6.5.1"
 }
 
 repositories {
@@ -79,25 +80,15 @@ publishing {
 
 /**
  * See https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials
+ *
+ * The following Gradle properties must be set:
+ * - signing.keyId (last 8 symbols of the key ID from 'gpg -K')
+ * - signing.password
+ * - signing.secretKeyRingFile ('gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg')
  */
 signing {
   sign(publishing.publications[project.name])
 }
-
-gradle.taskGraph.whenReady {
-  if (allTasks.any { it is Sign }) {
-    extra["signing.keyId"] = ""
-    extra["signing.password"] = ""
-    extra["signing.secretKeyRingFile"] = ""
-  }
-}
-
-/**
- * see https://github.com/marcphilipp/nexus-publish-plugin/blob/master/README.md
- */
-ext["serverUrl"] = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-ext["nexusUsername"] = ""
-ext["nexusPassword"] = ""
 
 configure<PublishingExtension> {
   publications {
@@ -116,8 +107,8 @@ configure<PublishingExtension> {
           }
           licenses {
             license {
-              name.set("MIT License")
-              url.set("https://opensource.org/licenses/MIT")
+              name.set("The Apache Software License, Version 2.0")
+              url.set("http://www.apache.org/licenses/LICENSE-2.0")
             }
           }
           issueManagement {
@@ -130,6 +121,15 @@ configure<PublishingExtension> {
             url.set("https://github.com/marcelkliemannel/kotlin-onetimepassword")
           }
         }
+      }
+    }
+  }
+  repositories {
+    maven {
+      url = URI("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+      credentials {
+        username = ""
+        password = ""
       }
     }
   }

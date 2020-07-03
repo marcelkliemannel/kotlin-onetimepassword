@@ -11,7 +11,7 @@ class GoogleAuthenticatorTest {
   @ParameterizedTest(name = "Timestamp: {0}, expected code: {1}")
   @DisplayName("Multiple Test Vectors")
   @CsvFileSource(resources = ["/dev/turingcomplete/googleAuthenticatorTestVectors.csv"])
-  fun zeroCodeDigitsTest(timestamp: Long, expectedCode: String) {
+  fun testGeneratedCodes(timestamp: Long, expectedCode: String) {
     val googleAuthenticator = GoogleAuthenticator("Leia")
     Assertions.assertEquals(expectedCode, googleAuthenticator.generate(Date(timestamp)))
     Assertions.assertTrue(googleAuthenticator.isValid(expectedCode, Date(timestamp)))
@@ -19,7 +19,7 @@ class GoogleAuthenticatorTest {
 
   @Test
   @DisplayName("16 Bytes generated secret")
-  fun generatedSecretExact16Bytes() {
+  fun testGeneratedSecretToBeExactly16Bytes() {
     val googleAuthenticatorRandomSecret = GoogleAuthenticator.createRandomSecret()
     Assertions.assertEquals(16, googleAuthenticatorRandomSecret.toByteArray().size)
   }

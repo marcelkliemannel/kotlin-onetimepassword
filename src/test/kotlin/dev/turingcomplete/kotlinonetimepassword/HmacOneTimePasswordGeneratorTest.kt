@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.CsvSource
 class HmacOneTimePasswordGeneratorTest {
   @Test
   @DisplayName("Edge case: 0 code digits")
-  fun zeroCodeDigitsTest() {
+  fun testZeroCodeDigits() {
     val config = HmacOneTimePasswordConfig(0, HmacAlgorithm.SHA1)
     val hmacOneTimePasswordGenerator = HmacOneTimePasswordGenerator("Leia".toByteArray(), config)
 
@@ -18,19 +18,18 @@ class HmacOneTimePasswordGeneratorTest {
   }
 
   @Test
-  @DisplayName("Negative and zero counter values")
-  fun negativeZeroAndCounterValues() {
+  @DisplayName("Zero counter value")
+  fun testZeroAndCounterValue() {
     val config = HmacOneTimePasswordConfig(8, HmacAlgorithm.SHA1)
     val hmacOneTimePasswordGenerator = HmacOneTimePasswordGenerator("Leia".toByteArray(), config)
 
     Assertions.assertEquals("67527464", hmacOneTimePasswordGenerator.generate(0))
-    Assertions.assertEquals("28203295", hmacOneTimePasswordGenerator.generate(-42))
   }
 
   @ParameterizedTest(name = "{0}, code digits: {1}, counter: {2}, code: {3}, secret: {4}")
   @DisplayName("Multiple algorithms, code digits, counter and secrets")
   @CsvFileSource(resources = ["/dev/turingcomplete/multipleHmacOneTimePasswordTestVectors.csv"])
-  fun multipleTestVectors(hmacAlgorithm: String, codeDigits: Int, counter: Long, expectedCode: String, secret: String) {
+  fun testGeneratedCodes(hmacAlgorithm: String, codeDigits: Int, counter: Long, expectedCode: String, secret: String) {
     validateWithExpectedCode(counter, expectedCode, codeDigits, secret, HmacAlgorithm.valueOf(hmacAlgorithm))
   }
 
@@ -40,7 +39,7 @@ class HmacOneTimePasswordGeneratorTest {
     "0, 755224", "1, 287082", "2, 359152", "3, 969429", "4, 338314",
     "5, 254676", "6, 287922", "7, 162583", "8, 399871", "9, 520489"
   ])
-  fun rfc4226AppendixDTestCases(counter: Long, code: String) {
+  fun testRfc4226AppendixDTestCases(counter: Long, code: String) {
     validateWithExpectedCode(counter, code, 6, "12345678901234567890", HmacAlgorithm.SHA1)
   }
 

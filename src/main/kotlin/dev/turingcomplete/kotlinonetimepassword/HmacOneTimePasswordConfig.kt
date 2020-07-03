@@ -1,10 +1,12 @@
 package dev.turingcomplete.kotlinonetimepassword
 
+import java.lang.IllegalArgumentException
+
 /**
  * The configuration for the [HmacOneTimePasswordGenerator].
  *
  * @property codeDigits the length of the generated code. The RFC 4226 requires
- *                      a code digits value between 6 and 8, to assure a good
+ *                      a code digits value between 6 and 8 to assure a good
  *                      security trade-off. However, this library does not set
  *                      any requirement for this property. But notice that through
  *                      the design of the algorithm the maximum code value is
@@ -15,5 +17,11 @@ package dev.turingcomplete.kotlinonetimepassword
  * @property hmacAlgorithm the "keyed-hash message authentication code" algorithm
  *                         to use to generate the hash, from which the code is
  *                         extracted (see [HmacAlgorithm] for available algorithms).
+ *
+ * @throws IllegalArgumentException if `codeDigits` is negative.
  */
-open class HmacOneTimePasswordConfig(var codeDigits: Int, var hmacAlgorithm: HmacAlgorithm)
+open class HmacOneTimePasswordConfig(var codeDigits: Int, var hmacAlgorithm: HmacAlgorithm) {
+  init {
+    require(codeDigits >= 0) { "Code digits must have a positive value." }
+  }
+}
