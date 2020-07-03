@@ -1,5 +1,6 @@
 package dev.turingcomplete.kotlinonetimepassword
 
+import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
 
 /**
@@ -10,8 +11,15 @@ import java.util.concurrent.TimeUnit
  * @property timeStepUnit see [timeStep]
  * @property codeDigits see documentation in [HmacOneTimePasswordConfig].
  * @property hmacAlgorithm see documentation in [HmacOneTimePasswordConfig].
+ *
+ * @throws IllegalArgumentException if `timeStep` is negative.
  */
 open class TimeBasedOneTimePasswordConfig(val timeStep: Long,
                                           val timeStepUnit: TimeUnit,
                                           codeDigits: Int,
-                                          hmacAlgorithm: HmacAlgorithm): HmacOneTimePasswordConfig(codeDigits, hmacAlgorithm)
+                                          hmacAlgorithm: HmacAlgorithm): HmacOneTimePasswordConfig(codeDigits, hmacAlgorithm) {
+
+  init {
+    require(timeStep >= 0) { "Time step must have a positive value." }
+  }
+}
