@@ -9,17 +9,14 @@ plugins {
   `maven-publish`
 }
 
-group = "dev.turingcomplete"
-version = "2.0.1"
+allprojects {
+  group = "dev.turingcomplete"
+  version = "2.0.1"
 
-tasks.withType<Wrapper> {
-  gradleVersion = "6.5.1"
-}
-
-repositories {
-  mavenLocal()
-  mavenCentral()
-  jcenter()
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
 }
 
 tasks {
