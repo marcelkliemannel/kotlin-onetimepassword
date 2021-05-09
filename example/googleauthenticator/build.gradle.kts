@@ -16,6 +16,10 @@ dependencies {
   implementation("com.google.zxing:core:3.4.1")
 }
 
+application {
+  mainClass.set("GoogleAuthenticatorApp")
+}
+
 javafx {
   version = "11.0.2"
   modules = listOf("javafx.controls", "javafx.graphics")
