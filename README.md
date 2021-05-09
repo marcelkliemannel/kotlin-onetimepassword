@@ -13,11 +13,11 @@ The implementations are based on the RFCs:
 * [RFC 4226: "RFC 4226 HOTP: An HMAC-Based One-Time Password Algorithm"](https://www.ietf.org/rfc/rfc4226.txt)
 * [RFC 6238: "TOTP: Time-Based One-Time Password Algorithm"](https://tools.ietf.org/html/rfc6238)
 
-> ℹ️ In this repository, things are rarely changed and thus the library is very rarely updated. However, this does **not** mean that the project is abandoned. Since the code is relatively simple and follows the specifications of the two RFCs, there is hardly any need to change anything.
+> ℹ️ In this repository, things are rarely changed and thus the library is very rarely updated. However, this project is **not** abandoned. Since the code is relatively simple and follows the specifications of the two RFCs, there is hardly any need to change anything.
 
-> ℹ️ If you want to use this library in conjunction with the Google Authenticator (or similar apps) please carefully read the capter [Google Authenticator](#google-authenticator), especially the remarks regarding the Base-32-encoded secret, and the plain text secret length limitation.
+> ℹ️ If you want to use this library in conjunction with the Google Authenticator app (or similar apps), please read carefully the capter [Google Authenticator](#google-authenticator), especially the remarks regarding the Base32-encoded secret, and the plain text secret length limitation.
 > Most problems arise from not following the two remarks correctly.
-> This library is used by hundreds of active users every day to generate Google Authenticator codes for several years now, so I am very confident that the code generates correct codes.
+> This library is used by hundreds of active users every day to generate Google Authenticator codes for several years now, so I am very confident that the code correctly generates codes.
 
 ## Dependency
 
@@ -27,10 +27,10 @@ The library is available at [Maven Central](https://mvnrepository.com/artifact/d
 
 ```java
 // Groovy
-compile 'dev.turingcomplete:kotlin-onetimepassword:2.0.1'
+implementation 'dev.turingcomplete:kotlin-onetimepassword:2.0.1'
 
 // Kotlin
-compile("dev.turingcomplete:kotlin-onetimepassword:2.0.1")
+implementation("dev.turingcomplete:kotlin-onetimepassword:2.0.1")
 ```
 
 ### Maven
@@ -133,10 +133,10 @@ The Google Authenticator generator is available through the class ```GoogleAuthe
 
 ```kotlin
 // Warning: the length of the plain text may be limited, see next chapter
-val plainTextSecret = "OurSharedSecret".toByteArray(Charsets.UTF_8)
+val plainTextSecret = "Secret1234".toByteArray(Charsets.UTF_8)
 
 // This is the encoded one to use in most of the generators (Base32 is from the Apache commons codec library)
-val base32EncodedSecret = Base32().encode(plainTextSecret)
+val base32EncodedSecret = Base32().encodeToString(plainTextSecret)
 println("Base32 encoded secret to be used in the Google Authenticator app: $base32EncodedSecret")
 
 val googleAuthenticator = GoogleAuthenticator(secret = base32EncodedSecret)
@@ -145,15 +145,26 @@ var code = googleAuthenticator.generate() // Will use System.currentTimeMillis()
 
 See the TOTP generator for the code generation ```generator(timestamp: Date)``` and validation ```isValid(code: String, timestamp: Date)``` methods.
 
-There is also a helper method ```GoogleAuthenticator.createRandomSecret()``` that will return a 16-byte Base32-decoded random secret.
+There is also a helper method ```GoogleAuthenticator.createRandomSecret()``` that will return a 16-byte Base32-encoded random secret.
 
 #### Secret Length Limitation
 
 Some generators limit the length of the **plain text secret** or set a fixed number of characters. The "Google way" has a fixed value of 10 characters. Anything outside this range will not be handled correctly by some generators.
 
+
+#### QR Code
+
+QR codes must use a URI that follows the definition in: [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format). The secret in this URI is the Base32-encoded one.
+
+
 #### Simulator the Google Authenticator
 
-The following code can be used to simulate the Google Authenticator. It prints a valid code for the secret `K6IPBHCQTVLCZDM2` every second.
+The directory ```example/googleauthenticator``` contains a simple JavaFX application to simulate the Google Authenticator:
+
+![](example/googleauthenticator/screenshot.png)
+
+
+Alternatively, the following code can be used to simulate the Google Authenticator on the command line. It prints a valid code for the secret `K6IPBHCQTVLCZDM2` every second.
 ```kotlin
 fun main() {
   val base32Secret = "K6IPBHCQTVLCZDM2"
