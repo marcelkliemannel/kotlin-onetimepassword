@@ -13,7 +13,7 @@ The implementations are based on the RFCs:
 * [RFC 4226: "RFC 4226 HOTP: An HMAC-Based One-Time Password Algorithm"](https://www.ietf.org/rfc/rfc4226.txt)
 * [RFC 6238: "TOTP: Time-Based One-Time Password Algorithm"](https://tools.ietf.org/html/rfc6238)
 
-> ℹ️ In this repository, things are rarely changed and thus the library is very rarely updated. However, this project is **not** abandoned. Since the code is relatively simple and follows the specifications of the two RFCs, there is hardly any need to change anything.
+> ℹ️ In this repository things are rarely changed and thus the library is very rarely updated. However, this project is **not** abandoned. Since the code is relatively simple and follows the specifications of the two RFCs, there is hardly any need to change anything.
 
 > ℹ️ If you want to use this library in conjunction with the Google Authenticator app (or similar apps), please read carefully the capter [Google Authenticator](#google-authenticator), especially the remarks regarding the Base32-encoded secret, and the plain text secret length limitation.
 > Most problems arise from not following the two remarks correctly.
@@ -161,7 +161,7 @@ QR codes must use a URI that follows the definition in: [Key Uri Format](https:/
 
 The directory ```example/googleauthenticator``` contains a simple JavaFX application to simulate the Google Authenticator:
 
-![](example/googleauthenticator/screenshot.png)
+![Example Google Authenticator Example](example/googleauthenticator/screenshot.png)
 
 
 Alternatively, the following code can be used to simulate the Google Authenticator on the command line. It prints a valid code for the secret `K6IPBHCQTVLCZDM2` every second.
