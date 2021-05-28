@@ -17,6 +17,28 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
   private val hmacOneTimePasswordGenerator: HmacOneTimePasswordGenerator = HmacOneTimePasswordGenerator(secret, config)
 
   /**
+   * Calculate the current time slot.
+   *
+   * The timeslot is basically the number of `timeStep`s from
+   * [TimeBasedOneTimePasswordConfig] which fits into the [timestamp].
+   *
+   * @param timestamp The Unix timestamp against the counting of the time
+   * steps is calculated. The default value is the current system time from
+   * [System.currentTimeMillis].
+   */
+  fun counter(timestamp: Long = System.currentTimeMillis()):Long = if (config.timeStep == 0L) {
+    0 // To avoid a divide by zero exception
+  }
+  else {
+    floor(timestamp.toDouble()
+      .div(TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit).toDouble()))
+      .toLong()
+  }
+
+  fun counter(date: Date = Date(System.currentTimeMillis())):Long = counter(date.time)
+  fun counter(instant: Instant = Instant.now()):Long = counter(instant.toEpochMilli())
+
+  /**
    * Generates a code representing the time-based one-time password.
    *
    * The TOTP algorithm uses the HTOP algorithm via [HmacOneTimePasswordGenerator.generate],
@@ -30,22 +52,11 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
    * steps is calculated. The default value is the current system time from
    * [System.currentTimeMillis].
    */
-  fun generate(timestamp: Long = System.currentTimeMillis()): String {
+  fun generate(timestamp: Long = System.currentTimeMillis()): String =
+    hmacOneTimePasswordGenerator.generate(counter(timestamp))
 
-    val counter = if (config.timeStep == 0L) {
-      0 // To avoid a divide by zero exception
-    }
-    else {
-      floor(timestamp.toDouble()
-                    .div(TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit).toDouble()))
-              .toLong()
-    }
-
-    return hmacOneTimePasswordGenerator.generate(counter)
-  }
-
-  fun generate(date: Date = Date(System.currentTimeMillis())) = generate(date.time)
-  fun generate(instant: Instant = Instant.now()) = generate(instant.toEpochMilli())
+  fun generate(date: Date = Date(System.currentTimeMillis())):String = generate(date.time)
+  fun generate(instant: Instant = Instant.now()):String = generate(instant.toEpochMilli())
 
   /**
    * Validates the given code.
