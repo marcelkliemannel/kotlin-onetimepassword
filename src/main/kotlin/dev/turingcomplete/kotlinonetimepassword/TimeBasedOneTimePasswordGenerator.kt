@@ -1,5 +1,6 @@
 package dev.turingcomplete.kotlinonetimepassword
 
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.floor
@@ -29,19 +30,22 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
    * steps is calculated. The default value is the current system time from
    * [System.currentTimeMillis].
    */
-  fun generate(timestamp: Date = Date(System.currentTimeMillis())): String {
+  fun generate(timestamp: Long = System.currentTimeMillis()): String {
 
     val counter = if (config.timeStep == 0L) {
       0 // To avoid a divide by zero exception
     }
     else {
-      floor((timestamp.time).toDouble()
+      floor(timestamp.toDouble()
                     .div(TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit).toDouble()))
               .toLong()
     }
 
     return hmacOneTimePasswordGenerator.generate(counter)
   }
+
+  fun generate(date: Date = Date(System.currentTimeMillis())) = generate(date.time)
+  fun generate(instant: Instant = Instant.now()) = generate(instant.toEpochMilli())
 
   /**
    * Validates the given code.
@@ -50,7 +54,10 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
    * @param timestamp the used challenge for the code. The default value is the
    *                  current system time from [System.currentTimeMillis].
    */
-  fun isValid(code: String, timestamp: Date = Date(System.currentTimeMillis())): Boolean {
+  fun isValid(code: String, timestamp: Long = System.currentTimeMillis()): Boolean {
     return code == generate(timestamp)
   }
+
+  fun isValid(code: String, date: Date = Date(System.currentTimeMillis())) = isValid(code, date.time)
+  fun isValid(code: String, instant: Instant = Instant.now()) = isValid(code, instant.toEpochMilli())
 }

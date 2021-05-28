@@ -35,6 +35,7 @@ out/
 gradle-app.setting
 !gradle-wrapper.jar
 .gradletasknamecache
+local.properties
 
 # Mac
 .DS_Store
