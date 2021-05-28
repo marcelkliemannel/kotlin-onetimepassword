@@ -124,6 +124,26 @@ var code3: String = timeBasedOneTimePasswordGenerator.generate(instant = java.ti
 
 Again, there is a helper method ```isValid(code: String, timestamp: Date)``` available in the instance of the generator, to make the validation of the received code possible in one line.
 
+There is also a helper method for calculating the time slot (counter) from a given timestamp, Date or Instant.
+```kotlin
+var counter0: Long = timeBasedOneTimePasswordGenerator.counter() // Will use System.currentTimeMillis()
+var counter1: Long = timeBasedOneTimePasswordGenerator.counter(timestamp = 1622234248000L)
+var counter2: Long = timeBasedOneTimePasswordGenerator.counter(date = java.util.Date(59)) // Will internally call counter(timestamp = date.time)
+var counter3: Long = timeBasedOneTimePasswordGenerator.counter(instant = java.time.Instant.ofEpochSecond(1622234248L)) // Will internally call counter(timestamp = instante.toEpochMillis())
+...
+```
+
+You can use this counter to calculate the start and the end of a timeslot and with this how long your TOTP is still valid.
+```kotlin
+val timestamp = instant.toEpochMillis()
+val totp = timeBasedOneTimePasswordGenerator.generate(timestamp)
+val counter = timeBasedOneTimePasswordGenerator.counter()
+val startEpochMillis = timeBasedOneTimePasswordGenerator.timeslotStart(counter)
+//basically the start of next time slot minus 1ms
+val endEpochMillis = timeBasedOneTimePasswordGenerator.timeslotStart(counter+1)-1
+//number of milliseconds the current TOTP is still valid
+val millisValid = endEpochMillis - timestamp
+```
 ### Google Authenticator
 
 ##### The "Google Way"
