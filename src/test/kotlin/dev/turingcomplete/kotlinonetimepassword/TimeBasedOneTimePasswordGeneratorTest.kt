@@ -38,6 +38,27 @@ class TimeBasedOneTimePasswordGeneratorTest {
   }
 
   @Test
+  fun testTimeSlotCalculation() {
+    val hmacAlgorithm = HmacAlgorithm.SHA512
+    val config = TimeBasedOneTimePasswordConfig(30, TimeUnit.SECONDS, 9, hmacAlgorithm)
+    val secret = "Leia".toByteArray()
+    val timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(secret, config)
+
+    val timestamp = 1593727270000 // 2020/07/03 00:01:10 GMT+0200
+    val expectedCounter = 53124242L
+    val counter = timeBasedOneTimePasswordGenerator.counter(timestamp)
+    Assertions.assertEquals(expectedCounter, counter)
+
+    val expectedStart = 1593727260000L // 2020/07/03 00:01:00 GMT+0200
+    val startMillis = timeBasedOneTimePasswordGenerator.timeslotStart(counter)
+    Assertions.assertEquals(expectedStart, startMillis)
+
+    val expectedEnd = 1593727289000L // 2020/07/03 00:01:29 GMT+0200
+    val endMillis = (timeBasedOneTimePasswordGenerator.timeslotStart(counter+1)-1000)
+    Assertions.assertEquals(expectedEnd, endMillis)
+  }
+
+  @Test
   @DisplayName("Zero time step values")
   fun testZeroTimeStep() {
     val hmacAlgorithm = HmacAlgorithm.SHA1
