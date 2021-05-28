@@ -35,8 +35,21 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
       .toLong()
   }
 
-  fun counter(date: Date = Date(System.currentTimeMillis())):Long = counter(date.time)
-  fun counter(instant: Instant = Instant.now()):Long = counter(instant.toEpochMilli())
+  fun counter(date: Date):Long = counter(date.time)
+  fun counter(instant: Instant):Long = counter(instant.toEpochMilli())
+
+  /**
+   * Calculates the start of the given time slot.
+   *
+   * This is basically the reverse calculation of counter(timestamp) method.
+   *
+   * @param counter The counter representing the time slot.
+   * @return The Unix timestamp where the given time slot starts.
+   */
+  fun timeslotStart(counter:Long):Long {
+    val timeStepMillis = TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit).toDouble()
+    return (counter * timeStepMillis).toLong()
+  }
 
   /**
    * Generates a code representing the time-based one-time password.
