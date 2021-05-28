@@ -112,12 +112,13 @@ val timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(secret
 
 As well as the HOTP configuration, the TOTP configuration takes the number of code digits and the HMAC algorithm as arguments (see the previous chapter). Additionally, the time window in which the generated code is valid is represented through the arguments timeStep and time step unit. The default value of the timestamp is the current system time
 
-The method ```generate(timestamp: Date)``` can now be used on the generator instance to generate a TOTP code:
+The methods ```generate(timestamp: Long)```, ```generate(date: Date)``` and ```generate(instant: Instant)``` can now be used on the generator instance to generate a TOTP code:
 
 ```kotlin
 var code0: String = timeBasedOneTimePasswordGenerator.generate() // Will use System.currentTimeMillis()
-var code1: String = timeBasedOneTimePasswordGenerator.generate(timestamp = Date(59))
-var code2: String = timeBasedOneTimePasswordGenerator.generate(timestamp = Date(1234567890))
+var code1: String = timeBasedOneTimePasswordGenerator.generate(timestamp = 1622234248000L)
+var code2: String = timeBasedOneTimePasswordGenerator.generate(date = java.util.Date(59)) // Will internally call generate(timestamp = date.time)
+var code3: String = timeBasedOneTimePasswordGenerator.generate(instant = java.time.Instant.ofEpochSecond(1622234248L)) // Will internally call generate(timestamp = instante.toEpochMillis())
 ...
 ```
 
