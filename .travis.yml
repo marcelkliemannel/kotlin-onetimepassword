@@ -1,8 +1,0 @@
-language: java
-
-os: linux
-dist: trusty
-jdk: openjdk11
-
-script:
-  - ./gradlew clean check
