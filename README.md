@@ -1,7 +1,5 @@
 # Kotlin One-Time Password Library
 
-[![Build Status](https://travis-ci.org/marcelkliemannel/kotlin-onetimepassword.svg?branch=master)](https://travis-ci.org/marcelkliemannel/kotlin-onetimepassword)
-
 This is a Kotlin library to generate one-time password codes for:
 
 * Google Authenticator
@@ -216,7 +214,7 @@ val secret3: ByteArray = randomSecretGenerator.createRandomSecret(1234) // 1234-
 ## Licensing
 
 
-Copyright (c) 2020 Marcel Kliemannel
+Copyright (c) 2021 Marcel Kliemannel
 
 Licensed under the **Apache License, Version 2.0** (the "License"); you may not use this file except in compliance with the License.
 
