@@ -1,4 +1,4 @@
-name: Verify Plugin
+name: Check
 
 on:
   push:
