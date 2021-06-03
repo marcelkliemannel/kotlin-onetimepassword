@@ -3,7 +3,7 @@ import java.net.URI
 plugins {
   `java-library`
   kotlin("jvm") version "1.3.41"
-  id("org.jetbrains.dokka") version "0.10.1"
+  id("org.jetbrains.dokka") version "1.4.32"
 
   signing
   `maven-publish`
@@ -34,10 +34,10 @@ tasks {
   }
 
   val dokkaJar by creating(Jar::class) {
-    dependsOn("dokka")
+    dependsOn("dokkaHtml")
     group = "build"
     archiveClassifier.set("javadoc")
-    from(getByPath("dokka").outputs)
+    from(getByPath("dokkaHtml").outputs)
   }
 
   artifacts {
