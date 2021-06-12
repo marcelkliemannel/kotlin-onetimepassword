@@ -176,7 +176,7 @@ Some generators limit the length of the **plain text secret** or set a fixed num
 QR codes must use a URI that follows the definition in: [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format). The secret in this URI is the Base32-encoded one.
 
 
-#### Simulator the Google Authenticator
+#### Simulate the Google Authenticator
 
 The directory ```example/googleauthenticator``` contains a simple JavaFX application to simulate the Google Authenticator:
 
