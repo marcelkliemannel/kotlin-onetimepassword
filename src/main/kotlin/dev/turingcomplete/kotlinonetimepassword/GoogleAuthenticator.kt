@@ -25,7 +25,10 @@ class GoogleAuthenticator(base32secret: ByteArray) {
      */
     @Deprecated("Use ByteArray representation",
                 replaceWith = ReplaceWith("createRandomSecretAsByteArray()"))
-    fun createRandomSecret(): String = Base32().encodeToString(createRandomSecretAsByteArray())
+    fun createRandomSecret(): String {
+      val randomSecret = RandomSecretGenerator().createRandomSecret(10)
+      return Base32().encodeAsString(randomSecret)
+    }
 
     /**
      * Generates a 16-byte secret as a Base32-encoded [ByteArray].
