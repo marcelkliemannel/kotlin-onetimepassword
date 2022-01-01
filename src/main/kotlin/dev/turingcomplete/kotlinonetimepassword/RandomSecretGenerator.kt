@@ -6,7 +6,13 @@ import java.security.SecureRandom
  * Generator to create a secure random secret via [SecureRandom].
  */
 class RandomSecretGenerator {
+  // -- Companion Object -------------------------------------------------------------------------------------------- //
+  // -- Properties -------------------------------------------------------------------------------------------------- //
+
   private val secureRandom = SecureRandom()
+
+  // -- Initialization ---------------------------------------------------------------------------------------------- //
+  // -- Exposed Methods --------------------------------------------------------------------------------------------- //
 
   /**
    * Generates a secure random secret with the same length as a hash
@@ -30,4 +36,7 @@ class RandomSecretGenerator {
 
     return randomSecret
   }
+
+  // -- Private Methods --------------------------------------------------------------------------------------------- //
+  // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }

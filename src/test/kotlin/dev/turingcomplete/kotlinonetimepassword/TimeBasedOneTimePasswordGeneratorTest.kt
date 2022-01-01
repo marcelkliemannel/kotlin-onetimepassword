@@ -11,6 +11,11 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class TimeBasedOneTimePasswordGeneratorTest {
+  // -- Companion Object -------------------------------------------------------------------------------------------- //
+  // -- Properties -------------------------------------------------------------------------------------------------- //
+  // -- Initialization ---------------------------------------------------------------------------------------------- //
+  // -- Exposed Methods --------------------------------------------------------------------------------------------- //
+
   @Test
   @DisplayName("Edge case: 0 code digits")
   fun testZeroCodeDigitsTest() {
@@ -110,6 +115,8 @@ class TimeBasedOneTimePasswordGeneratorTest {
                              30, TimeUnit.SECONDS, expectedCode, secret)
   }
 
+  // -- Private Methods --------------------------------------------------------------------------------------------- //
+
   private fun validateWithExpectedCode(hmacAlgorithm:
                                        HmacAlgorithm,
                                        codeDigits: Int,
@@ -125,4 +132,6 @@ class TimeBasedOneTimePasswordGeneratorTest {
     Assertions.assertEquals(expectedCode, timeBasedOneTimePasswordGenerator.generate(timestamp))
     Assertions.assertTrue(timeBasedOneTimePasswordGenerator.isValid(expectedCode, timestamp))
   }
+
+  // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }

@@ -8,6 +8,11 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 class RandomSecretGeneratorTest {
+  // -- Companion Object -------------------------------------------------------------------------------------------- //
+  // -- Properties -------------------------------------------------------------------------------------------------- //
+  // -- Initialization ---------------------------------------------------------------------------------------------- //
+  // -- Exposed Methods --------------------------------------------------------------------------------------------- //
+
   @Test
   @DisplayName("Same secret length as the HMAC algorithm hash")
   fun testExpectedHmacAlgorithmHashLength() {
@@ -16,4 +21,7 @@ class RandomSecretGeneratorTest {
       Assertions.assertEquals(it.hashBytes, randomSecret.size)
     }
   }
+
+  // -- Private Methods --------------------------------------------------------------------------------------------- //
+  // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }

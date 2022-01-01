@@ -15,6 +15,11 @@ import kotlin.math.pow
  */
 open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
                                         private val config: HmacOneTimePasswordConfig) {
+  // -- Companion Object -------------------------------------------------------------------------------------------- //
+  // -- Properties -------------------------------------------------------------------------------------------------- //
+  // -- Initialization ---------------------------------------------------------------------------------------------- //
+  // -- Exposed Methods --------------------------------------------------------------------------------------------- //
+
   /**
    * Generates a code representing a HMAC-based one-time password.
    *
@@ -103,4 +108,7 @@ open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
   fun isValid(code: String, counter: Long): Boolean {
     return code == generate(counter)
   }
+
+  // -- Private Methods --------------------------------------------------------------------------------------------- //
+  // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }

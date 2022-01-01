@@ -9,6 +9,8 @@ package dev.turingcomplete.kotlinonetimepassword
  * @property hashBytes the length of the returned hash produced by the algorithm.
  */
 enum class HmacAlgorithm(val macAlgorithmName: String, val hashBytes: Int) {
+  // -- Values ------------------------------------------------------------------------------------------------------ //
+
   /**
    * SHA1 HMAC with a hash of 20-bytes
    */
@@ -20,5 +22,12 @@ enum class HmacAlgorithm(val macAlgorithmName: String, val hashBytes: Int) {
   /**
    * SHA512 HMAC with a hash of 64-bytes
    */
-  SHA512("HmacSHA512", 64);
+  SHA512("HmacSHA512", 64)
+
+  // -- Companion Object -------------------------------------------------------------------------------------------- //
+  // -- Properties -------------------------------------------------------------------------------------------------- //
+  // -- Initialization ---------------------------------------------------------------------------------------------- //
+  // -- Exposed Methods --------------------------------------------------------------------------------------------- //
+  // -- Private Methods --------------------------------------------------------------------------------------------- //
+  // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }

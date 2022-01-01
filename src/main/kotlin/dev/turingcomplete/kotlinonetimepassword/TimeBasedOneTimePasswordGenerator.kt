@@ -13,8 +13,13 @@ import kotlin.math.floor
  * @property config the [TimeBasedOneTimePasswordConfig] for this generator.
  */
 open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, private val config: TimeBasedOneTimePasswordConfig) {
+  // -- Companion Object -------------------------------------------------------------------------------------------- //
+  // -- Properties -------------------------------------------------------------------------------------------------- //
 
   private val hmacOneTimePasswordGenerator: HmacOneTimePasswordGenerator = HmacOneTimePasswordGenerator(secret, config)
+
+  // -- Initialization ---------------------------------------------------------------------------------------------- //
+  // -- Exposed Methods --------------------------------------------------------------------------------------------- //
 
   /**
    * Calculate the current time slot.
@@ -26,17 +31,18 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
    * steps is calculated. The default value is the current system time from
    * [System.currentTimeMillis].
    */
-  fun counter(timestamp: Long = System.currentTimeMillis()):Long = if (config.timeStep == 0L) {
+  fun counter(timestamp: Long = System.currentTimeMillis()): Long = if (config.timeStep == 0L) {
     0 // To avoid a divide by zero exception
-  }
-  else {
-    floor(timestamp.toDouble()
-      .div(TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit).toDouble()))
+  } else {
+    floor(
+      timestamp.toDouble()
+        .div(TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit).toDouble())
+         )
       .toLong()
   }
 
-  fun counter(date: Date):Long = counter(date.time)
-  fun counter(instant: Instant):Long = counter(instant.toEpochMilli())
+  fun counter(date: Date): Long = counter(date.time)
+  fun counter(instant: Instant): Long = counter(instant.toEpochMilli())
 
   /**
    * Calculates the start of the given time slot.
@@ -46,7 +52,7 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
    * @param counter The counter representing the time slot.
    * @return The Unix timestamp where the given time slot starts.
    */
-  fun timeslotStart(counter:Long):Long {
+  fun timeslotStart(counter: Long): Long {
     val timeStepMillis = TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit).toDouble()
     return (counter * timeStepMillis).toLong()
   }
@@ -68,8 +74,8 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
   fun generate(timestamp: Long = System.currentTimeMillis()): String =
     hmacOneTimePasswordGenerator.generate(counter(timestamp))
 
-  fun generate(date: Date = Date(System.currentTimeMillis())):String = generate(date.time)
-  fun generate(instant: Instant = Instant.now()):String = generate(instant.toEpochMilli())
+  fun generate(date: Date = Date(System.currentTimeMillis())): String = generate(date.time)
+  fun generate(instant: Instant = Instant.now()): String = generate(instant.toEpochMilli())
 
   /**
    * Validates the given code.
@@ -84,4 +90,7 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
 
   fun isValid(code: String, date: Date = Date(System.currentTimeMillis())) = isValid(code, date.time)
   fun isValid(code: String, instant: Instant = Instant.now()) = isValid(code, instant.toEpochMilli())
+
+  // -- Private Methods --------------------------------------------------------------------------------------------- //
+  // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }

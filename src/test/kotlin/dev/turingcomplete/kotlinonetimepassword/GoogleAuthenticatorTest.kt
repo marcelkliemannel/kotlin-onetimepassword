@@ -11,6 +11,10 @@ import org.junit.jupiter.params.provider.CsvFileSource
 import java.util.*
 
 class GoogleAuthenticatorTest {
+  // -- Companion Object -------------------------------------------------------------------------------------------- //
+  // -- Properties -------------------------------------------------------------------------------------------------- //
+  // -- Initialization ---------------------------------------------------------------------------------------------- //
+  // -- Exposed Methods --------------------------------------------------------------------------------------------- //
 
   @ParameterizedTest(name = "Timestamp: {0}, expected code: {1}")
   @DisplayName("Multiple Test Vectors")
@@ -34,4 +38,7 @@ class GoogleAuthenticatorTest {
     val googleAuthenticatorRandomSecret = GoogleAuthenticator.createRandomSecretAsByteArray()
     assertEquals(16, googleAuthenticatorRandomSecret.size)
   }
+
+  // -- Private Methods --------------------------------------------------------------------------------------------- //
+  // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }

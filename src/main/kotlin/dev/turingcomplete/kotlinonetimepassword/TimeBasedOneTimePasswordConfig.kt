@@ -18,8 +18,15 @@ open class TimeBasedOneTimePasswordConfig(val timeStep: Long,
                                           val timeStepUnit: TimeUnit,
                                           codeDigits: Int,
                                           hmacAlgorithm: HmacAlgorithm): HmacOneTimePasswordConfig(codeDigits, hmacAlgorithm) {
+  // -- Companion Object -------------------------------------------------------------------------------------------- //
+  // -- Properties -------------------------------------------------------------------------------------------------- //
+  // -- Initialization ---------------------------------------------------------------------------------------------- //
 
   init {
     require(timeStep >= 0) { "Time step must have a positive value." }
   }
+
+  // -- Exposed Methods --------------------------------------------------------------------------------------------- //
+  // -- Private Methods --------------------------------------------------------------------------------------------- //
+  // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }

@@ -8,6 +8,11 @@ import org.junit.jupiter.params.provider.CsvFileSource
 import org.junit.jupiter.params.provider.CsvSource
 
 class HmacOneTimePasswordGeneratorTest {
+  // -- Companion Object -------------------------------------------------------------------------------------------- //
+  // -- Properties -------------------------------------------------------------------------------------------------- //
+  // -- Initialization ---------------------------------------------------------------------------------------------- //
+  // -- Exposed Methods --------------------------------------------------------------------------------------------- //
+
   @Test
   @DisplayName("Edge case: 0 code digits")
   fun testZeroCodeDigits() {
@@ -43,6 +48,8 @@ class HmacOneTimePasswordGeneratorTest {
     validateWithExpectedCode(counter, code, 6, "12345678901234567890", HmacAlgorithm.SHA1)
   }
 
+  // -- Private Methods --------------------------------------------------------------------------------------------- //
+
   private fun validateWithExpectedCode(counter: Long, expectedCode: String, codeDigits: Int, secret: String, hmacAlgorithm: HmacAlgorithm) {
     val config = HmacOneTimePasswordConfig(codeDigits, hmacAlgorithm)
     val hmacOneTimePasswordGenerator = HmacOneTimePasswordGenerator(secret.toByteArray(), config)
@@ -50,4 +57,6 @@ class HmacOneTimePasswordGeneratorTest {
     Assertions.assertEquals(expectedCode, hmacOneTimePasswordGenerator.generate(counter))
     Assertions.assertTrue(hmacOneTimePasswordGenerator.isValid(expectedCode, counter))
   }
+
+  // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }

@@ -21,7 +21,15 @@ import java.lang.IllegalArgumentException
  * @throws IllegalArgumentException if `codeDigits` is negative.
  */
 open class HmacOneTimePasswordConfig(var codeDigits: Int, var hmacAlgorithm: HmacAlgorithm) {
+  // -- Companion Object -------------------------------------------------------------------------------------------- //
+  // -- Properties -------------------------------------------------------------------------------------------------- //
+  // -- Initialization ---------------------------------------------------------------------------------------------- //
+
   init {
-    require(codeDigits >= 0) { "Code digits must have a positive value." }
+    require(codeDigits >= 0) { "Number of code digits must be positive." }
   }
+
+  // -- Exposed Methods --------------------------------------------------------------------------------------------- //
+  // -- Private Methods --------------------------------------------------------------------------------------------- //
+  // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }
