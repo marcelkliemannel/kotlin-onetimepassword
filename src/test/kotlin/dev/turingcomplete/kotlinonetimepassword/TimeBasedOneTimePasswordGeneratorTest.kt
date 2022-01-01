@@ -91,7 +91,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
 
   @ParameterizedTest
   @DisplayName("Multiple algorithms, code digits, timestamps, sects, time steps and time step units")
-  @CsvFileSource(resources = ["/dev/turingcomplete/multipleTimeBasedOneTimePasswordTestVectors.csv"])
+  @CsvFileSource(resources = ["/dev/turingcomplete/kotlinonetimepassword/multipleTimeBasedOneTimePasswordTestVectors.csv"])
   fun testGeneratedCodes(hmacAlgorithmName: String, codeDigits: Int, timestamp: Long, expectedCode: String,
                          secret: String, timeStep: Long, timeStepUnit: String) {
 
@@ -101,7 +101,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
 
   @ParameterizedTest(name = "{0}, timestamp: {1}, expected code: {2}")
   @DisplayName("RFC 6238 Appendix B Test Vectors")
-  @CsvFileSource(resources = ["/dev/turingcomplete/rfc6238AppendixBTimeBasedOneTimePasswordTestVectors.csv"])
+  @CsvFileSource(resources = ["/dev/turingcomplete/kotlinonetimepassword/rfc6238AppendixBTimeBasedOneTimePasswordTestVectors.csv"])
   fun testRfc6238AppendixDTestCases(hmacAlgorithmName: String, time: String, expectedCode: String, secret: String) {
     val timestamp = SimpleDateFormat("yyy-MM-dd HH:mm:ss").apply {
       timeZone = TimeZone.getTimeZone("UTC")

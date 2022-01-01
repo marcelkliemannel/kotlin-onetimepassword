@@ -10,7 +10,7 @@ import java.util.*
 class GoogleAuthenticatorTest {
   @ParameterizedTest(name = "Timestamp: {0}, expected code: {1}")
   @DisplayName("Multiple Test Vectors")
-  @CsvFileSource(resources = ["/dev/turingcomplete/googleAuthenticatorTestVectors.csv"])
+  @CsvFileSource(resources = ["/dev/turingcomplete/kotlinonetimepassword/googleAuthenticatorTestVectors.csv"])
   fun testGeneratedCodes(timestamp: Long, expectedCode: String) {
     val googleAuthenticator = GoogleAuthenticator("Leia")
     Assertions.assertEquals(expectedCode, googleAuthenticator.generate(Date(timestamp)))

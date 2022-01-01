@@ -28,7 +28,7 @@ class HmacOneTimePasswordGeneratorTest {
 
   @ParameterizedTest(name = "{0}, code digits: {1}, counter: {2}, code: {3}, secret: {4}")
   @DisplayName("Multiple algorithms, code digits, counter and secrets")
-  @CsvFileSource(resources = ["/dev/turingcomplete/multipleHmacOneTimePasswordTestVectors.csv"])
+  @CsvFileSource(resources = ["/dev/turingcomplete/kotlinonetimepassword/multipleHmacOneTimePasswordTestVectors.csv"])
   fun testGeneratedCodes(hmacAlgorithm: String, codeDigits: Int, counter: Long, expectedCode: String, secret: String) {
     validateWithExpectedCode(counter, expectedCode, codeDigits, secret, HmacAlgorithm.valueOf(hmacAlgorithm))
   }
