@@ -91,10 +91,7 @@ open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
     // The current value of the 'oneTimePassword' variable has 5 digits. Therefore
     // the resulting code is filled with one 0 at the beginning, to meet the 6
     // digits requirement.
-    var codeString = codeInt.toString()
-    repeat(config.codeDigits - codeString.length) {
-      codeString = "0$codeString"
-    }
+    var codeString = codeInt.toString().padStart(config.codeDigits, '0')
 
     return codeString
   }
