@@ -19,16 +19,16 @@ The implementations are based on the RFCs:
 
 ## Dependency
 
-The library is available at [Maven Central](https://mvnrepository.com/artifact/dev.turingcomplete/kotlin-onetimepassword):
+This library is available at [Maven Central](https://mvnrepository.com/artifact/dev.turingcomplete/kotlin-onetimepassword):
 
 ### Gradle
 
 ```java
 // Groovy
-implementation 'dev.turingcomplete:kotlin-onetimepassword:2.1.0'
+implementation 'dev.turingcomplete:kotlin-onetimepassword:2.2.0'
 
 // Kotlin
-implementation("dev.turingcomplete:kotlin-onetimepassword:2.1.0")
+implementation("dev.turingcomplete:kotlin-onetimepassword:2.2.0")
 ```
 
 ### Maven
@@ -37,7 +37,7 @@ implementation("dev.turingcomplete:kotlin-onetimepassword:2.1.0")
 <dependency>
     <groupId>dev.turingcomplete</groupId>
     <artifactId>kotlin-onetimepassword</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
 </dependency>
 ```
 
