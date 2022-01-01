@@ -214,7 +214,7 @@ val secret3: ByteArray = randomSecretGenerator.createRandomSecret(1234) // 1234-
 ## Licensing
 
 
-Copyright (c) 2021 Marcel Kliemannel
+Copyright (c) 2022 Marcel Kliemannel
 
 Licensed under the **Apache License, Version 2.0** (the "License"); you may not use this file except in compliance with the License.
 
