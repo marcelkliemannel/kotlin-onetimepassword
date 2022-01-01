@@ -1,4 +1,5 @@
 import java.net.URI
+import kotlin.math.sign
 
 plugins {
   `java-library`
@@ -54,9 +55,9 @@ configure<JavaPluginExtension> {
 
 dependencies {
   implementation(kotlin("stdlib"))
-  implementation("commons-codec:commons-codec:1.12")
+  implementation("commons-codec:commons-codec:1.15")
 
-  val jUnitVersion = "5.5.1"
+  val jUnitVersion = "5.8.2"
   testImplementation("org.junit.jupiter:junit-jupiter-params:$jUnitVersion")
   testImplementation("org.junit.jupiter:junit-jupiter-api:$jUnitVersion")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jUnitVersion")
