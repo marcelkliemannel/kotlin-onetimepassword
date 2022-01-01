@@ -11,10 +11,9 @@ import java.util.concurrent.TimeUnit
  * - time step: 30 seconds;
  * - and code digits: 6.
  *
- * @param base32secret the shared secret <b>that must already be Base32-encoded</b>
- *                     (use [org.apache.commons.codec.binary.BaseNCodec.encode(byte[])]).
+ * @param base32secret the shared Base32-encoded-encoded secret.
  */
-class GoogleAuthenticator(base32secret: String) {
+class GoogleAuthenticator(base32secret: ByteArray) {
   private val timeBasedOneTimePasswordGenerator: TimeBasedOneTimePasswordGenerator
 
   init {
@@ -23,6 +22,10 @@ class GoogleAuthenticator(base32secret: String) {
 
     timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(Base32().decode(base32secret), config)
   }
+
+  @Deprecated("Use ByteArray representation",
+              replaceWith = ReplaceWith("GoogleAuthenticator(ByteArray)"))
+  constructor(base32secret: String) : this(base32secret.toByteArray())
 
   /**
    * Generates a code as a TOTP one-time password.
@@ -52,9 +55,19 @@ class GoogleAuthenticator(base32secret: String) {
      * Due to the overhead of 160% of the Base32 encoding, only 10 bytes are
      * needed for the random secret to generate a 16-byte array.
      */
-    fun createRandomSecret(): String {
+    @Deprecated("Use ByteArray representation",
+                replaceWith = ReplaceWith("createRandomSecretAsByteArray()"))
+    fun createRandomSecret(): String = Base32().encodeToString(createRandomSecretAsByteArray())
+
+    /**
+     * Generates a 16-byte secret as a Base32-encoded [ByteArray].
+     *
+     * Due to the overhead of 160% of the Base32 encoding, only 10 bytes are
+     * needed for the random secret to generate a 16-byte array.
+     */
+    fun createRandomSecretAsByteArray(): ByteArray {
       val randomSecret = RandomSecretGenerator().createRandomSecret(10)
-      return Base32().encodeToString(randomSecret)
+      return Base32().encode(randomSecret)
     }
   }
 }

@@ -82,7 +82,7 @@ open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
     // codeDigits = 6
     // codeInt = 137359152 % 10^6 = 35954
     val codeInt = binary.int.rem(10.0.pow(config.codeDigits).toInt())
-    
+
     // The integer code variable may contain a value with fewer digits than the
     // required code digits. Therefore the final code value is filled with zeros
     // on the left, till the code digits requirement is fulfilled.
@@ -91,9 +91,7 @@ open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
     // The current value of the 'oneTimePassword' variable has 5 digits. Therefore
     // the resulting code is filled with one 0 at the beginning, to meet the 6
     // digits requirement.
-    var codeString = codeInt.toString().padStart(config.codeDigits, '0')
-
-    return codeString
+    return codeInt.toString().padStart(config.codeDigits, '0')
   }
 
   /**
