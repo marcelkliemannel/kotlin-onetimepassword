@@ -25,10 +25,10 @@ This library is available at [Maven Central](https://mvnrepository.com/artifact/
 
 ```java
 // Groovy
-implementation 'dev.turingcomplete:kotlin-onetimepassword:2.2.0'
+implementation 'dev.turingcomplete:kotlin-onetimepassword:2.3.0'
 
 // Kotlin
-implementation("dev.turingcomplete:kotlin-onetimepassword:2.2.0")
+implementation("dev.turingcomplete:kotlin-onetimepassword:2.3.0")
 ```
 
 ### Maven
