@@ -41,7 +41,14 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
       .toLong()
   }
 
+  /**
+   * Convenience method for [counter].
+   */
   fun counter(date: Date): Long = counter(date.time)
+
+  /**
+   * Convenience method for [counter].
+   */
   fun counter(instant: Instant): Long = counter(instant.toEpochMilli())
 
   /**
@@ -74,8 +81,15 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
   fun generate(timestamp: Long = System.currentTimeMillis()): String =
     hmacOneTimePasswordGenerator.generate(counter(timestamp))
 
-  fun generate(date: Date = Date(System.currentTimeMillis())): String = generate(date.time)
-  fun generate(instant: Instant = Instant.now()): String = generate(instant.toEpochMilli())
+  /**
+   * Convenience method for [generate].
+   */
+  fun generate(date: Date): String = generate(date.time)
+
+  /**
+   * Convenience method for [generate].
+   */
+  fun generate(instant: Instant): String = generate(instant.toEpochMilli())
 
   /**
    * Validates the given code.
@@ -88,8 +102,15 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
     return code == generate(timestamp)
   }
 
-  fun isValid(code: String, date: Date = Date(System.currentTimeMillis())) = isValid(code, date.time)
-  fun isValid(code: String, instant: Instant = Instant.now()) = isValid(code, instant.toEpochMilli())
+  /**
+   * Convenience method for [isValid].
+   */
+  fun isValid(code: String, date: Date) = isValid(code, date.time)
+
+  /**
+   * Convenience method for [isValid].
+   */
+  fun isValid(code: String, instant: Instant) = isValid(code, instant.toEpochMilli())
 
   // -- Private Methods --------------------------------------------------------------------------------------------- //
   // -- Inner Type -------------------------------------------------------------------------------------------------- //
