@@ -164,7 +164,9 @@ var code = googleAuthenticator.generate() // Will use System.currentTimeMillis()
 
 See the TOTP generator for the code generation ```generator(timestamp: Date)``` and validation ```isValid(code: String, timestamp: Date)``` methods.
 
-There is also a helper method ```GoogleAuthenticator.createRandomSecret()```, that will return a 16-byte Base32-encoded random secret.
+There is also a helper method ```GoogleAuthenticator.createRandomSecretAsByteArray()```, that will return a 16-byte Base32-encoded random secret.
+
+(Note that the Base32-encoding of the secret is just a wrapper to the outside world. Hence, the `TimeBasedOneTimePasswordGenerator` internally still works with the non-encoded plain secret.)
 
 #### Secret Length Limitation
 
