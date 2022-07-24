@@ -74,12 +74,12 @@ open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
     // step binary value (0x7F = 0111 1111).
     //
     // Ongoing example:
-    // The value at index 0 is 107, which has a MSB of 0. So nothing must be done
+    // The value at index 0 is 107, which has an MSB of 0. So nothing must be done
     // and the binary value remains the same.
     binary.put(0, binary.get(0).and(0x7F))
 
     // The resulting integer value of the code must have at most the required code
-    // digits. Therefore the binary value is reduced by calculating the modulo
+    // digits. Therefore, the binary value is reduced by calculating the modulo
     // 10 ^ codeDigits.
     //
     // On going example:
