@@ -12,7 +12,7 @@ plugins {
 
 allprojects {
   group = "dev.turingcomplete"
-  version = "2.2.0"
+  version = "2.3.0"
 
   repositories {
     mavenLocal()
@@ -110,12 +110,12 @@ configure<PublishingExtension> {
             }
           }
           issueManagement {
-            system.set("Github")
+            system.set("GitHub")
             url.set("https://github.com/marcelkliemannel/kotlin-onetimepassword/issues")
           }
           scm {
             connection.set("scm:git:git://github.com:marcelkliemannel/kotlin-onetimepassword.git")
-            developerConnection.set("scm:git:git://github.com:marcelkliemannel/kotlin-onetimepassword.git")
+            developerConnection.set("scm:git:ssh://github.com:marcelkliemannel/kotlin-onetimepassword.git")
             url.set("https://github.com/marcelkliemannel/kotlin-onetimepassword")
           }
         }
