@@ -1,5 +1,4 @@
 import java.net.URI
-import kotlin.math.sign
 
 plugins {
   `java-library`
@@ -61,6 +60,16 @@ dependencies {
   testImplementation("org.junit.jupiter:junit-jupiter-params:$jUnitVersion")
   testImplementation("org.junit.jupiter:junit-jupiter-api:$jUnitVersion")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jUnitVersion")
+
+  testImplementation("com.github.bastiaanjansen:otp-java:1.3.0") {
+    because("For `OtherLibrariesComparisonTest`")
+  }
+  testImplementation("com.eatthepath:java-otp:0.3.1") {
+    because("For `OtherLibrariesComparisonTest`")
+  }
+  testImplementation("com.j256.two-factor-auth:two-factor-auth:1.3") {
+    because("For `OtherLibrariesComparisonTest`")
+  }
 }
 
 tasks.withType<Test> {
