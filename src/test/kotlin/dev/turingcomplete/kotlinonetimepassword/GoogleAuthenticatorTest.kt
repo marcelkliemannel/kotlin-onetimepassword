@@ -1,7 +1,6 @@
 package dev.turingcomplete.kotlinonetimepassword
 
 import org.apache.commons.codec.binary.Base32
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
@@ -37,6 +36,14 @@ class GoogleAuthenticatorTest {
   fun testGeneratedByteArraySecretToBeExactly16Bytes() {
     val googleAuthenticatorRandomSecret = GoogleAuthenticator.createRandomSecretAsByteArray()
     assertEquals(16, googleAuthenticatorRandomSecret.size)
+  }
+
+  @Test
+  fun testOtpAuthUriBuilder() {
+    val secret = Base32().encode("Foo".toByteArray())
+    assertTrue(String(secret).startsWith("IZXW6"))
+    val otpAuthUri = GoogleAuthenticator(secret).otpAuthUriBuilder().issuer("foo").buildToString()
+    assertEquals("otpauth://totp/?algorithm=SHA1&digits=6&period=30&issuer=foo&secret=IZXW6", otpAuthUri)
   }
 
   // -- Private Methods --------------------------------------------------------------------------------------------- //

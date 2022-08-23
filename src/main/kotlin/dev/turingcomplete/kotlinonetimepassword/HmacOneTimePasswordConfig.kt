@@ -1,7 +1,5 @@
 package dev.turingcomplete.kotlinonetimepassword
 
-import java.lang.IllegalArgumentException
-
 /**
  * The configuration for the [HmacOneTimePasswordGenerator].
  *
@@ -20,7 +18,7 @@ import java.lang.IllegalArgumentException
  *
  * @throws IllegalArgumentException if `codeDigits` is negative.
  */
-open class HmacOneTimePasswordConfig(var codeDigits: Int, var hmacAlgorithm: HmacAlgorithm) {
+open class HmacOneTimePasswordConfig(val codeDigits: Int, val hmacAlgorithm: HmacAlgorithm) {
   // -- Companion Object -------------------------------------------------------------------------------------------- //
   // -- Properties -------------------------------------------------------------------------------------------------- //
   // -- Initialization ---------------------------------------------------------------------------------------------- //

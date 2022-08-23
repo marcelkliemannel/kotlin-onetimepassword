@@ -2,8 +2,8 @@ import java.net.URI
 
 plugins {
   `java-library`
-  kotlin("jvm") version "1.3.41"
-  id("org.jetbrains.dokka") version "1.4.32"
+  kotlin("jvm") version "1.7.10"
+  id("org.jetbrains.dokka") version "1.7.10"
 
   signing
   `maven-publish`
@@ -11,7 +11,7 @@ plugins {
 
 allprojects {
   group = "dev.turingcomplete"
-  version = "2.3.0"
+  version = "2.4.0"
 
   repositories {
     mavenLocal()
@@ -56,15 +56,15 @@ dependencies {
   implementation(kotlin("stdlib"))
   implementation("commons-codec:commons-codec:1.15")
 
-  val jUnitVersion = "5.8.2"
+  val jUnitVersion = "5.9.0"
   testImplementation("org.junit.jupiter:junit-jupiter-params:$jUnitVersion")
   testImplementation("org.junit.jupiter:junit-jupiter-api:$jUnitVersion")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jUnitVersion")
 
-  testImplementation("com.github.bastiaanjansen:otp-java:1.3.0") {
+  testImplementation("com.github.bastiaanjansen:otp-java:1.3.2") {
     because("For `OtherLibrariesComparisonTest`")
   }
-  testImplementation("com.eatthepath:java-otp:0.3.1") {
+  testImplementation("com.eatthepath:java-otp:0.4.0") {
     because("For `OtherLibrariesComparisonTest`")
   }
   testImplementation("com.j256.two-factor-auth:two-factor-auth:1.3") {

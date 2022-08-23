@@ -1,5 +1,6 @@
 package dev.turingcomplete.kotlinonetimepassword
 
+import org.apache.commons.codec.binary.Base32
 import java.nio.ByteBuffer
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -89,7 +90,7 @@ open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
     val codeInt = binary.int.rem(10.0.pow(config.codeDigits).toInt())
 
     // The integer code variable may contain a value with fewer digits than the
-    // required code digits. Therefore the final code value is filled with zeros
+    // required code digits. Therefore, the final code value is filled with zeros
     // on the left, till the code digits requirement is fulfilled.
     //
     // Ongoing example:
@@ -107,6 +108,16 @@ open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
    */
   fun isValid(code: String, counter: Long): Boolean {
     return code == generate(counter)
+  }
+
+  /**
+   * Creates an [OtpAuthUriBuilder], which pre-configured with the secret, as
+   * well as the algorithm and code digits from the [config].
+   */
+  fun otpAuthUriBuilder(initialCounter: Long): OtpAuthUriBuilder.Hotp {
+    return OtpAuthUriBuilder.forHotp(initialCounter, Base32().encode(secret))
+      .algorithm(config.hmacAlgorithm)
+      .digits(config.codeDigits)
   }
 
   // -- Private Methods --------------------------------------------------------------------------------------------- //

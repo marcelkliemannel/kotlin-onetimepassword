@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
  *
  * @param base32secret the shared Base32-encoded-encoded secret.
  */
-class GoogleAuthenticator(base32secret: ByteArray) {
+class GoogleAuthenticator(private val base32secret: ByteArray) {
   // -- Companion Object -------------------------------------------------------------------------------------------- //
 
   companion object {
@@ -40,6 +40,8 @@ class GoogleAuthenticator(base32secret: ByteArray) {
       val randomSecret = RandomSecretGenerator().createRandomSecret(10)
       return Base32().encode(randomSecret)
     }
+
+    val CONFIG = TimeBasedOneTimePasswordConfig(30, TimeUnit.SECONDS, 6, HmacAlgorithm.SHA1)
   }
 
   // -- Properties -------------------------------------------------------------------------------------------------- //
@@ -49,10 +51,7 @@ class GoogleAuthenticator(base32secret: ByteArray) {
   // -- Initialization ---------------------------------------------------------------------------------------------- //
 
   init {
-    val hmacAlgorithm = HmacAlgorithm.SHA1
-    val config = TimeBasedOneTimePasswordConfig(30, TimeUnit.SECONDS, 6, hmacAlgorithm)
-
-    timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(Base32().decode(base32secret), config)
+    timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(Base32().decode(base32secret), CONFIG)
   }
 
   @Deprecated("Use ByteArray representation",
@@ -81,6 +80,13 @@ class GoogleAuthenticator(base32secret: ByteArray) {
   fun isValid(code: String, timestamp: Date = Date(System.currentTimeMillis())): Boolean {
     return code == generate(timestamp)
   }
+
+  /**
+   * Creates an [OtpAuthUriBuilder], which pre-configured with the secret, as
+   * well as the fixed Google authenticator configuration for the algorithm,
+   * code digits and time step.
+   */
+  fun otpAuthUriBuilder(): OtpAuthUriBuilder.Totp = timeBasedOneTimePasswordGenerator.otpAuthUriBuilder()
 
   // -- Private Methods --------------------------------------------------------------------------------------------- //
   // -- Inner Type -------------------------------------------------------------------------------------------------- //
