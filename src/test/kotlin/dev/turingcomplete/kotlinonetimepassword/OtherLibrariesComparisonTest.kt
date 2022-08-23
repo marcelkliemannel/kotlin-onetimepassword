@@ -13,6 +13,10 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.crypto.spec.SecretKeySpec
 
+/**
+ * This test compares the TOTP code generation of this library to other Java-based
+ * TOTP libraries.
+ */
 class OtherLibrariesComparisonTest {
   // -- Companion Object -------------------------------------------------------------------------------------------- //
 
@@ -28,7 +32,7 @@ class OtherLibrariesComparisonTest {
   @ParameterizedTest
   @DisplayName("com.eatthepath:java-otp (https://github.com/jchambers/java-otp)")
   @CsvSource(value = ["15, 6", "15, 8", "30, 6", "30, 8", "45, 6", "45, 8"])
-  fun testComparetoEtthapath(timeStepSeconds: Long, digits: Int) {
+  fun testCompareToEtthapath(timeStepSeconds: Long, digits: Int) {
     val currentTime = System.currentTimeMillis()
     val expectedCode = createExpectedCode(timeStepSeconds, digits, currentTime)
 

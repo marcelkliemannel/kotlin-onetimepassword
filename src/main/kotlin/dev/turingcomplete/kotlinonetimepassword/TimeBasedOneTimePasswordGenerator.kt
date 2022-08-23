@@ -1,5 +1,6 @@
 package dev.turingcomplete.kotlinonetimepassword
 
+import org.apache.commons.codec.binary.Base32
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -31,14 +32,13 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
    * steps is calculated. The default value is the current system time from
    * [System.currentTimeMillis].
    */
-  fun counter(timestamp: Long = System.currentTimeMillis()): Long = if (config.timeStep == 0L) {
-    0 // To avoid a divide by zero exception
-  } else {
-    floor(
-      timestamp.toDouble()
-        .div(TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit).toDouble())
-         )
-      .toLong()
+  fun counter(timestamp: Long = System.currentTimeMillis()): Long {
+    if (config.timeStep == 0L) {
+      // To avoid a divide by zero
+      return 0
+    }
+
+    return floor(timestamp.toDouble().div(TimeUnit.MILLISECONDS.convert(config.timeStep, config.timeStepUnit))).toLong()
   }
 
   /**
@@ -111,6 +111,17 @@ open class TimeBasedOneTimePasswordGenerator(private val secret: ByteArray, priv
    * Convenience method for [isValid].
    */
   fun isValid(code: String, instant: Instant) = isValid(code, instant.toEpochMilli())
+
+  /**
+   * Creates an [OtpAuthUriBuilder], which pre-configured with the secret, as
+   * well as the algorithm, code digits and time step from the [config].
+   */
+  fun otpAuthUriBuilder(): OtpAuthUriBuilder.Totp {
+    return OtpAuthUriBuilder.forTotp(Base32().encode(secret))
+      .algorithm(config.hmacAlgorithm)
+      .digits(config.codeDigits)
+      .period(config.timeStep, config.timeStepUnit)
+  }
 
   // -- Private Methods --------------------------------------------------------------------------------------------- //
   // -- Inner Type -------------------------------------------------------------------------------------------------- //

@@ -1,6 +1,9 @@
 package dev.turingcomplete.kotlinonetimepassword
 
+import org.apache.commons.codec.binary.Base32
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -24,7 +27,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
     val secret = "Leia".toByteArray()
     val timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(secret, config)
 
-    Assertions.assertEquals(0, timeBasedOneTimePasswordGenerator.generate(Date(12345)).length)
+    assertEquals(0, timeBasedOneTimePasswordGenerator.generate(Date(12345)).length)
   }
 
   @Test
@@ -37,7 +40,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
     val firstTimestamp = 1593727260000 // 2020/07/03 00:01:00
     val code = timeBasedOneTimePasswordGenerator.generate(Date(firstTimestamp))
     val secondTimestamp = 1593727289000 // 2020/07/03 00:01:29
-    Assertions.assertTrue(timeBasedOneTimePasswordGenerator.isValid(code, Date(secondTimestamp)))
+    assertTrue(timeBasedOneTimePasswordGenerator.isValid(code, Date(secondTimestamp)))
     val thirdTimestamp = 1593727290000 // 2020/07/03 00:01:30
     Assertions.assertFalse(timeBasedOneTimePasswordGenerator.isValid(code, Date(thirdTimestamp)))
   }
@@ -52,15 +55,15 @@ class TimeBasedOneTimePasswordGeneratorTest {
     val timestamp = 1593727270000 // 2020/07/03 00:01:10 GMT+0200
     val expectedCounter = 53124242L
     val counter = timeBasedOneTimePasswordGenerator.counter(timestamp)
-    Assertions.assertEquals(expectedCounter, counter)
+    assertEquals(expectedCounter, counter)
 
     val expectedStart = 1593727260000L // 2020/07/03 00:01:00 GMT+0200
     val startMillis = timeBasedOneTimePasswordGenerator.timeslotStart(counter)
-    Assertions.assertEquals(expectedStart, startMillis)
+    assertEquals(expectedStart, startMillis)
 
     val expectedEnd = 1593727289000L // 2020/07/03 00:01:29 GMT+0200
     val endMillis = (timeBasedOneTimePasswordGenerator.timeslotStart(counter+1)-1000)
-    Assertions.assertEquals(expectedEnd, endMillis)
+    assertEquals(expectedEnd, endMillis)
   }
 
   @Test
@@ -71,7 +74,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
 
     val zeroConfig = TimeBasedOneTimePasswordConfig(0, TimeUnit.MINUTES, 6, hmacAlgorithm)
     val zeroTimeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(secret, zeroConfig)
-    Assertions.assertEquals("527464", zeroTimeBasedOneTimePasswordGenerator.generate(Date(12334532445)))
+    assertEquals("527464", zeroTimeBasedOneTimePasswordGenerator.generate(Date(12334532445)))
   }
 
   @Test
@@ -82,8 +85,8 @@ class TimeBasedOneTimePasswordGeneratorTest {
     val zeroConfig = TimeBasedOneTimePasswordConfig(30, TimeUnit.MINUTES, 6, hmacAlgorithm)
     val zeroTimeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(secret, zeroConfig)
 
-    Assertions.assertEquals("527464", zeroTimeBasedOneTimePasswordGenerator.generate(Date(0)))
-    Assertions.assertEquals("630888", zeroTimeBasedOneTimePasswordGenerator.generate(Date(-22334579403)))
+    assertEquals("527464", zeroTimeBasedOneTimePasswordGenerator.generate(Date(0)))
+    assertEquals("630888", zeroTimeBasedOneTimePasswordGenerator.generate(Date(-22334579403)))
   }
 
   @ParameterizedTest(name = "Timestamp: {0}, expected code: {1}")
@@ -115,6 +118,16 @@ class TimeBasedOneTimePasswordGeneratorTest {
                              30, TimeUnit.SECONDS, expectedCode, secret)
   }
 
+  @Test
+  fun testOtpAuthUriBuilder() {
+    val secret = "Foo".toByteArray()
+    assertTrue(Base32().encodeToString(secret).startsWith("IZXW6"))
+    val config = TimeBasedOneTimePasswordConfig(45, TimeUnit.MINUTES, 9, HmacAlgorithm.SHA256)
+    val timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(secret, config)
+    val otpAuthUri = timeBasedOneTimePasswordGenerator.otpAuthUriBuilder().issuer("foo").buildToString()
+    assertEquals("otpauth://totp/?algorithm=SHA256&digits=9&period=${TimeUnit.MINUTES.toSeconds(45)}&issuer=foo&secret=IZXW6", otpAuthUri)
+  }
+
   // -- Private Methods --------------------------------------------------------------------------------------------- //
 
   private fun validateWithExpectedCode(hmacAlgorithm:
@@ -129,8 +142,8 @@ class TimeBasedOneTimePasswordGeneratorTest {
     val config = TimeBasedOneTimePasswordConfig(timeStep, timeStepUnit, codeDigits, hmacAlgorithm)
     val timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(secret.toByteArray(), config)
 
-    Assertions.assertEquals(expectedCode, timeBasedOneTimePasswordGenerator.generate(timestamp))
-    Assertions.assertTrue(timeBasedOneTimePasswordGenerator.isValid(expectedCode, timestamp))
+    assertEquals(expectedCode, timeBasedOneTimePasswordGenerator.generate(timestamp))
+    assertTrue(timeBasedOneTimePasswordGenerator.isValid(expectedCode, timestamp))
   }
 
   // -- Inner Type -------------------------------------------------------------------------------------------------- //
