@@ -173,38 +173,7 @@ There is also a helper method ```GoogleAuthenticator.createRandomSecretAsByteArr
 Some generators limit the length of the **plain text secret** or set a fixed number of characters. So the "Google way", which has a fixed value of 10 characters. Anything outside this range will not be handled correctly by some generators.
 
 
-#### Key URI Format and QR Code
-
-The [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format) specification defines a URI which can carry all generator configuration values. This URI can be embedded inside a QR code, which makes the setup of an OTP account in OTP Apps easy and error-free.
-
-This library provides the `OtpAuthUriBuilder` do generate such a URI. For example:
-```kotlin
-OtpAuthUriBuilder.forTotp(Base32().encode("secret".toByteArray()))
-  .label("John", "Company")
-  .issuer("Company")
-  .digits(8)
-  .buildToString()
-```
-Would generate the URI:
-```text
-otpauth://totp/Company:John/?issuer=Company&digits=8&secret=ONSWG4TFOQ
-```
-
-Note that according to the specification, the Base32 padding character `=` will be removed in the `secret` parameter value.
-
-All three generator are providing the method `otpAuthUriBuilder()` to create an `OtpAuthUriBuilder` which already has all the configuration values set. For example:
-```kotlin
-GoogleAuthenticator(Base32().encode("secret".toByteArray()))
-  .otpAuthUriBuilder()
-  .issuer("Company")
-  .buildToString()
-```
-Would generate the URI:
-```text
-otpauth://totp/?algorithm=SHA1&digits=6&period=30&issuer=Company&secret=ONSWG4TFOQ
-```
-
-### Simulate the Google Authenticator
+#### Simulate the Google Authenticator
 
 The directory ```example/googleauthenticator``` contains a simple JavaFX application to simulate the Google Authenticator:
 
@@ -239,8 +208,39 @@ val secret2: ByteArray = randomSecretGenerator.createRandomSecret(HmacAlgorithm.
 val secret3: ByteArray = randomSecretGenerator.createRandomSecret(1234) // 1234-byte secret
 ```
 
-## Licensing
+### Key URI Format for QR Codes
 
+The [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format) specification defines a URI which can carry all generator configuration values. This URI can be embedded inside a QR code, which makes the setup of an OTP account in OTP Apps easy and error-free.
+
+This library provides the `OtpAuthUriBuilder` do generate such a URI. For example:
+```kotlin
+OtpAuthUriBuilder.forTotp(Base32().encode("secret".toByteArray()))
+  .label("John", "Company")
+  .issuer("Company")
+  .digits(8)
+  .buildToString()
+```
+Would generate the URI:
+```text
+otpauth://totp/Company:John/?issuer=Company&digits=8&secret=ONSWG4TFOQ
+```
+
+Note that according to the specification, the Base32 padding character `=` will be removed in the `secret` parameter value.
+
+All three generator are providing the method `otpAuthUriBuilder()` to create an `OtpAuthUriBuilder` which already has all the configuration values set. For example:
+```kotlin
+GoogleAuthenticator(Base32().encode("secret".toByteArray()))
+  .otpAuthUriBuilder()
+  .issuer("Company")
+  .buildToString()
+```
+Would generate the URI:
+```text
+otpauth://totp/?algorithm=SHA1&digits=6&period=30&issuer=Company&secret=ONSWG4TFOQ
+```
+
+
+## Licensing
 
 Copyright (c) 2022 Marcel Kliemannel
 
