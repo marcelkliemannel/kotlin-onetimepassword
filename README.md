@@ -168,7 +168,7 @@ val millisValid = endEpochMillis - timestamp
 
 ##### The "Google Way"
 
-Some TOTP generators use the "Google way" to generate codes. This slightly different behavior means that the generator works internally with the plain text secret, **but the secret gets passed around as Base32-encoded**. (Confusing the plain text and the Base32-encoded secret in the different steps is the most common reason people think the Google Authenticator with this library doesn't work.)
+Some TOTP generators use the "Google way" to generate codes. This slightly different behavior means that the generator works internally with the plain text secret, **but the secret gets passed around as Base32-encoded**. Confusing the plain text and the Base32-encoded secret in the different steps is the most common reason people think the Google Authenticator with this library doesn't work.
 
 The Google Authenticator generator is available through the class ```GoogleAuthenticator```. It is a decorator for the TOTP generator with a fixed code digits value of 6, SHA1 as HMAC algorithm, and a time window of 30 seconds. The constructor only takes **the Base32-encoded secret** as an argument:
 
@@ -264,7 +264,7 @@ Would generate the URI:
 otpauth://totp/?algorithm=SHA1&digits=6&period=30&issuer=Company&secret=ONSWG4TFOQ
 ```
 
-Note that according to the specification, the Base32 padding character `=` will be removed in the `secret` parameter value (e.g., the Base32-encoded secret of `foo` is `MZXW6===` and would end as `MZXW6` in the `security` parameter).
+Note that according to the specification, the Base32 padding character `=` will be removed in the `secret` parameter value (e.g., the Base32-encoded secret of `foo` is `MZXW6===` and would end as `MZXW6` in the `secret` parameter).
 
 ## Licensing
 
