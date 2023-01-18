@@ -249,7 +249,7 @@ Would generate the URI:
 otpauth://totp/Company:John/?issuer=Company&digits=8&secret=ONSWG4TFOQ
 ```
 
-All three generator are providing the method `otpAuthUriBuilder()` to create an `OtpAuthUriBuilder` which already has all the configuration values set. For example:
+All three generators are providing the method `otpAuthUriBuilder()` to create an `OtpAuthUriBuilder` which already has all the configuration values set. For example:
 
 ```kotlin
 GoogleAuthenticator(Base32().encode("secret".toByteArray()))
@@ -268,7 +268,7 @@ Note that according to the specification, the Base32 padding character `=` will 
 
 ## Licensing
 
-Copyright (c) 2022 Marcel Kliemannel
+Copyright (c) 2023 Marcel Kliemannel
 
 Licensed under the **Apache License, Version 2.0** (the "License"); you may not use this file except in compliance with the License.
 
