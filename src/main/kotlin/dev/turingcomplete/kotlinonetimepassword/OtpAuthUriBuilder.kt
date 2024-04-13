@@ -210,7 +210,7 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
 
   private fun buildUriWithoutSecret(additionalParameters: Map<String, String> = emptyMap()): String {
     val query = parameters.plus(additionalParameters).map { "${it.key}=${it.value}" }.joinToString(separator = "&", prefix = "?")
-    return "otpauth://$type/${if (label != null) "$label" else ""}$query"
+    return "otpauth://$type/${if (label != null) label else ""}$query"
   }
 
   private fun removePaddingFromBase32Secret(base32Secret: ByteArray): ByteArray {
