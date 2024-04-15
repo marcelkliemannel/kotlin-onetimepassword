@@ -44,10 +44,10 @@ This library is available at [Maven Central](https://mvnrepository.com/artifact/
 
 ```java
 // Groovy
-implementation 'dev.turingcomplete:kotlin-onetimepassword:2.4.0'
+implementation 'dev.turingcomplete:kotlin-onetimepassword:2.4.1'
 
 // Kotlin
-implementation("dev.turingcomplete:kotlin-onetimepassword:2.4.0")
+implementation("dev.turingcomplete:kotlin-onetimepassword:2.4.1")
 ```
 
 ### Maven
@@ -56,7 +56,7 @@ implementation("dev.turingcomplete:kotlin-onetimepassword:2.4.0")
 <dependency>
     <groupId>dev.turingcomplete</groupId>
     <artifactId>kotlin-onetimepassword</artifactId>
-    <version>2.4.0</version>
+    <version>2.4.1</version>
 </dependency>
 ```
 
