@@ -89,17 +89,17 @@ class OtpAuthUriBuilderTest {
 
   @Test
   fun testLabel() {
-    assertEquals("otpauth://totp/iss:acc/?secret=$BASE32_SECRET_REMOVED_PADDING",
+    assertEquals("otpauth://totp/iss:acc?secret=$BASE32_SECRET_REMOVED_PADDING",
                  OtpAuthUriBuilder.forTotp(BASE32_SECRET)
                    .label("acc", "iss", false)
                    .buildToString())
 
-    assertEquals("otpauth://totp/acc/?secret=$BASE32_SECRET_REMOVED_PADDING",
+    assertEquals("otpauth://totp/acc?secret=$BASE32_SECRET_REMOVED_PADDING",
                  OtpAuthUriBuilder.forTotp(BASE32_SECRET)
                    .label("acc", null, false)
                    .buildToString())
 
-    assertEquals("otpauth://totp/iss%3Aacc/?secret=$BASE32_SECRET_REMOVED_PADDING",
+    assertEquals("otpauth://totp/iss%3Aacc?secret=$BASE32_SECRET_REMOVED_PADDING",
                  OtpAuthUriBuilder.forTotp(BASE32_SECRET)
                    .label("acc", "iss", true)
                    .buildToString())
@@ -107,7 +107,7 @@ class OtpAuthUriBuilderTest {
 
   @Test
   fun testLabelUrlEncoding() {
-    assertEquals("otpauth://totp/i%2F%2Fss%3Aa%2F%2Fcc/?secret=$BASE32_SECRET_REMOVED_PADDING",
+    assertEquals("otpauth://totp/i%2F%2Fss%3Aa%2F%2Fcc?secret=$BASE32_SECRET_REMOVED_PADDING",
                  OtpAuthUriBuilder.forTotp(BASE32_SECRET)
                    .label("a//cc", "i//ss", true)
                    .buildToString())
@@ -121,7 +121,7 @@ class OtpAuthUriBuilderTest {
       .digits(8)
 
     val stringRepresentation = builder.buildToString()
-    assertEquals("otpauth://totp/i%2Fss:acc/?issuer=i%2Fss&digits=8&secret=$BASE32_SECRET_REMOVED_PADDING", stringRepresentation)
+    assertEquals("otpauth://totp/i%2Fss:acc?issuer=i%2Fss&digits=8&secret=$BASE32_SECRET_REMOVED_PADDING", stringRepresentation)
 
     val byteArrayRepresentation = builder.buildToByteArray()
     assertEquals(stringRepresentation, String(byteArrayRepresentation))
