@@ -11,9 +11,11 @@ The implementations are based on the RFCs:
 * [RFC 4226: "RFC 4226 HOTP: An HMAC-Based One-Time Password Algorithm"](https://www.ietf.org/rfc/rfc4226.txt)
 * [RFC 6238: "TOTP: Time-Based One-Time Password Algorithm"](https://tools.ietf.org/html/rfc6238)
 
-> ℹ️ In this repository, changes don't happen that often and the library gets updated very rarely. However, this is **not** an abandoned project. Since the code is relatively simple, follows the specifications of the two RFCs, and has good test coverage, there is hardly any need to change anything.
+> [!NOTE]  
+> This library is updated very rarely, and there are only minor changes every now and then. However, this should not be seen as an abandonment of the project. Since the code is relatively simple, follows the specifications of the relevant RFCs, and has good test coverage, there is little need to change anything.
 
-> ℹ️ If you want to use this library in conjunction with the Google Authenticator app (or similar apps), please carefully read the chapter [Google Authenticator](#google-authenticator), especially the remarks regarding the Base32-encoded secret and the plain text secret length limitation. Most problems arise from not following the two remarks correctly.
+> [!TIP]
+> If you want to use this library in conjunction with the Google Authenticator app (or similar apps), please carefully read the chapter [Google Authenticator](#google-authenticator), especially the remarks regarding the Base32-encoded secret and the plain text secret length limitation. Most problems arise from not following the two remarks correctly.
 >
 > This library gets used by hundreds of active users every day to generate Google Authenticator codes for several years now, so I am very confident that the code correctly generates codes.
 
@@ -44,10 +46,10 @@ This library is available at [Maven Central](https://mvnrepository.com/artifact/
 
 ```java
 // Groovy
-implementation 'dev.turingcomplete:kotlin-onetimepassword:2.4.0'
+implementation 'dev.turingcomplete:kotlin-onetimepassword:2.4.1'
 
 // Kotlin
-implementation("dev.turingcomplete:kotlin-onetimepassword:2.4.0")
+implementation("dev.turingcomplete:kotlin-onetimepassword:2.4.1")
 ```
 
 ### Maven
@@ -56,7 +58,7 @@ implementation("dev.turingcomplete:kotlin-onetimepassword:2.4.0")
 <dependency>
     <groupId>dev.turingcomplete</groupId>
     <artifactId>kotlin-onetimepassword</artifactId>
-    <version>2.4.0</version>
+    <version>2.4.1</version>
 </dependency>
 ```
 
@@ -268,7 +270,7 @@ Note that according to the specification, the Base32 padding character `=` will 
 
 ## Licensing
 
-Copyright (c) 2023 Marcel Kliemannel
+Copyright (c) 2024 Marcel Kliemannel
 
 Licensed under the **Apache License, Version 2.0** (the "License"); you may not use this file except in compliance with the License.
 
