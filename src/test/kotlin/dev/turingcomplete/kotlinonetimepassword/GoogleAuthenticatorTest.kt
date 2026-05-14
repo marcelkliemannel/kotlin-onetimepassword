@@ -39,6 +39,13 @@ class GoogleAuthenticatorTest {
   }
 
   @Test
+  @DisplayName("32 Bytes generated secure byte array secret")
+  fun testGeneratedSecureByteArraySecretToBeExactly32Bytes() {
+    val googleAuthenticatorRandomSecret = GoogleAuthenticator.createSecureRandomSecretAsByteArray()
+    assertEquals(32, googleAuthenticatorRandomSecret.size)
+  }
+
+  @Test
   fun testOtpAuthUriBuilder() {
     val secret = Base32().encode("Foo".toByteArray())
     assertTrue(String(secret).startsWith("IZXW6"))

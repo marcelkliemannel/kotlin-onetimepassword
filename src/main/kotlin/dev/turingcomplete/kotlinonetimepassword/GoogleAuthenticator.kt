@@ -1,46 +1,69 @@
 package dev.turingcomplete.kotlinonetimepassword
 
 import org.apache.commons.codec.binary.Base32
+import java.security.MessageDigest
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
- * This class is a decorator of the [TimeBasedOneTimePasswordGenerator] that
- * provides the default values used by the Google Authenticator:
- * - HMAC algorithm: SHA1;
- * - time step: 30 seconds;
- * - and code digits: 6.
+ * Convenience wrapper around [TimeBasedOneTimePasswordGenerator] using the
+ * default parameters expected by Google Authenticator compatible apps:
  *
- * @param base32secret the shared Base32-encoded-encoded secret.
+ * - HMAC algorithm: [HmacAlgorithm.SHA1]
+ * - time step: 30 seconds
+ * - code digits: 6
+ *
+ * The constructor expects the shared secret as Base32-encoded bytes. The input
+ * is copied before decoding so later changes to the provided array do not affect
+ * this instance.
+ *
+ * @param base32secret the shared Base32-encoded secret.
+ *
+ * @throws IllegalArgumentException if [base32secret] is empty.
  */
 class GoogleAuthenticator(private val base32secret: ByteArray) {
   // -- Companion Object -------------------------------------------------------------------------------------------- //
 
   companion object {
+    private const val GOOGLE_AUTHENTICATOR_COMPATIBLE_SECRET_BYTES = 10
+
     /**
-     * Generates a 16-byte secret as a Base32-encoded string.
+     * Generates a Google Authenticator compatible 16-character Base32-encoded string.
      *
-     * Due to the overhead of 160% of the Base32 encoding, only 10 bytes are
-     * needed for the random secret to generate a 16-byte array.
+     * This preserves the historical Google Authenticator convention of an
+     * 80-bit secret. For new deployments that do not require this compatibility,
+     * prefer [createSecureRandomSecretAsByteArray].
      */
     @Deprecated("Use ByteArray representation",
                 replaceWith = ReplaceWith("createRandomSecretAsByteArray()"))
     fun createRandomSecret(): String {
-      val randomSecret = RandomSecretGenerator().createRandomSecret(10)
+      val randomSecret = RandomSecretGenerator().createRandomSecret(GOOGLE_AUTHENTICATOR_COMPATIBLE_SECRET_BYTES)
       return Base32().encodeAsString(randomSecret)
     }
 
     /**
-     * Generates a 16-byte secret as a Base32-encoded [ByteArray].
+     * Generates a Google Authenticator compatible 16-character Base32-encoded [ByteArray].
      *
-     * Due to the overhead of 160% of the Base32 encoding, only 10 bytes are
-     * needed for the random secret to generate a 16-byte array.
+     * This preserves the historical Google Authenticator convention of an
+     * 80-bit secret. For new deployments that do not require this compatibility,
+     * prefer [createSecureRandomSecretAsByteArray].
      */
     fun createRandomSecretAsByteArray(): ByteArray {
-      val randomSecret = RandomSecretGenerator().createRandomSecret(10)
+      val randomSecret = RandomSecretGenerator().createRandomSecret(GOOGLE_AUTHENTICATOR_COMPATIBLE_SECRET_BYTES)
       return Base32().encode(randomSecret)
     }
 
+    /**
+     * Generates an RFC 4226 recommended 160-bit secret as a Base32-encoded [ByteArray].
+     */
+    fun createSecureRandomSecretAsByteArray(): ByteArray {
+      val randomSecret = RandomSecretGenerator().createRandomSecret(HmacAlgorithm.SHA1)
+      return Base32().encode(randomSecret)
+    }
+
+    /**
+     * Default TOTP configuration used by this wrapper.
+     */
     val CONFIG = TimeBasedOneTimePasswordConfig(30, TimeUnit.SECONDS, 6, HmacAlgorithm.SHA1)
   }
 
@@ -51,9 +74,16 @@ class GoogleAuthenticator(private val base32secret: ByteArray) {
   // -- Initialization ---------------------------------------------------------------------------------------------- //
 
   init {
-    timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(Base32().decode(base32secret), CONFIG)
+    require(base32secret.isNotEmpty()) { "Secret must not be empty." }
+    timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(Base32().decode(base32secret.copyOf()), CONFIG)
   }
 
+  /**
+   * Creates a Google Authenticator wrapper from a Base32-encoded secret string.
+   *
+   * Prefer [GoogleAuthenticator] with a [ByteArray] to avoid keeping secrets in
+   * immutable JVM strings.
+   */
   @Deprecated("Use ByteArray representation",
               replaceWith = ReplaceWith("GoogleAuthenticator(ByteArray)"))
   constructor(base32secret: String) : this(base32secret.toByteArray())
@@ -61,29 +91,37 @@ class GoogleAuthenticator(private val base32secret: ByteArray) {
   // -- Exposed Methods --------------------------------------------------------------------------------------------- //
 
   /**
-   * Generates a code as a TOTP one-time password.
+   * Generates the TOTP code for [timestamp].
    *
-   * @param timestamp the challenge for the code. The default value is the
+   * @param timestamp the time used as the TOTP challenge. The default value is the
    *                  current system time from [System.currentTimeMillis].
+   *
+   * @return a zero-padded numeric code with [CONFIG]'s digit count.
    */
   fun generate(timestamp: Date = Date(System.currentTimeMillis())): String {
     return timeBasedOneTimePasswordGenerator.generate(timestamp)
   }
 
   /**
-   * Validates the given code.
+   * Validates [code] against the code generated for [timestamp].
    *
-   * @param code the code calculated from the challenge to validate.
-   * @param timestamp the used challenge for the code. The default value is the
+   * The comparison is performed using [MessageDigest.isEqual] to avoid leaking
+   * information through simple early-exit string comparison.
+   *
+   * @param code the code to validate.
+   * @param timestamp the time used as the TOTP challenge. The default value is the
    *                  current system time from [System.currentTimeMillis].
+   *
+   * @return `true` if [code] matches the generated code for [timestamp].
    */
   fun isValid(code: String, timestamp: Date = Date(System.currentTimeMillis())): Boolean {
-    return code == generate(timestamp)
+    val expectedCode = generate(timestamp)
+    return MessageDigest.isEqual(code.toByteArray(Charsets.UTF_8), expectedCode.toByteArray(Charsets.UTF_8))
   }
 
   /**
-   * Creates an [OtpAuthUriBuilder], which pre-configured with the secret, as
-   * well as the fixed Google authenticator configuration for the algorithm,
+   * Creates an [OtpAuthUriBuilder] preconfigured with the secret and the fixed
+   * Google Authenticator compatible configuration for the algorithm,
    * code digits and time step.
    */
   fun otpAuthUriBuilder(): OtpAuthUriBuilder.Totp = timeBasedOneTimePasswordGenerator.otpAuthUriBuilder()
