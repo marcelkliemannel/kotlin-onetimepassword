@@ -286,7 +286,7 @@ According to the specification, Base32 padding characters (`=`) are removed from
 
 ## Licensing
 
-Copyright (c) 2024 Marcel Kliemannel
+Copyright (c) 20246 Marcel Kliemannel
 
 Licensed under the **Apache License, Version 2.0** (the "License"); you may not use this file except in compliance with the License.
 
