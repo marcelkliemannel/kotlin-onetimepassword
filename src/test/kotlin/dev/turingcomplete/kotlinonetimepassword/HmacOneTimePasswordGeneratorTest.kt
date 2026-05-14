@@ -2,6 +2,7 @@ package dev.turingcomplete.kotlinonetimepassword
 
 import org.apache.commons.codec.binary.Base32
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -18,10 +19,21 @@ class HmacOneTimePasswordGeneratorTest {
   @Test
   @DisplayName("Edge case: 0 code digits")
   fun testZeroCodeDigits() {
-    val config = HmacOneTimePasswordConfig(0, HmacAlgorithm.SHA1)
+    val config = HmacOneTimePasswordConfig(0, HmacAlgorithm.SHA1, allowInsecureConfiguration = true)
     val hmacOneTimePasswordGenerator = HmacOneTimePasswordGenerator("Leia".toByteArray(), config)
 
     assertEquals(0, hmacOneTimePasswordGenerator.generate(42).length)
+  }
+
+  @Test
+  @DisplayName("Secure default rejects insecure code digits")
+  fun testSecureDefaultRejectsInsecureCodeDigits() {
+    assertThrows(IllegalArgumentException::class.java) {
+      HmacOneTimePasswordConfig(0, HmacAlgorithm.SHA1)
+    }
+    assertThrows(IllegalArgumentException::class.java) {
+      HmacOneTimePasswordConfig(5, HmacAlgorithm.SHA1)
+    }
   }
 
   @Test
@@ -63,7 +75,7 @@ class HmacOneTimePasswordGeneratorTest {
   // -- Private Methods --------------------------------------------------------------------------------------------- //
 
   private fun validateWithExpectedCode(counter: Long, expectedCode: String, codeDigits: Int, secret: String, hmacAlgorithm: HmacAlgorithm) {
-    val config = HmacOneTimePasswordConfig(codeDigits, hmacAlgorithm)
+    val config = HmacOneTimePasswordConfig(codeDigits, hmacAlgorithm, allowInsecureConfiguration = codeDigits < 6)
     val hmacOneTimePasswordGenerator = HmacOneTimePasswordGenerator(secret.toByteArray(), config)
 
     assertEquals(expectedCode, hmacOneTimePasswordGenerator.generate(counter))
