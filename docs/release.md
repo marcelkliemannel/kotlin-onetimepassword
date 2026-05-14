@@ -23,19 +23,25 @@ version = spotlessChangelog.versionNext
 
 The release tag prefix is configured as `v` through `changelog.tagPrefix` in
 `gradle.properties`, so release tags must use the format `v<version>`, for
-example `v2.5.0`.
+example `v<version>`.
 
 To prepare a release pull request:
 
 1. Move the entries under `## [Unreleased]` in `CHANGELOG.md` into a new
    released section with the target version and release date, for example
-   `## [2.5.0] - 2026-05-14`.
+   `## [<version>] - YYYY-MM-DD`.
 2. Add a new empty `## [Unreleased]` section above the released section.
 3. Update the comparison links at the bottom of `CHANGELOG.md`:
    - `[Unreleased]` should compare the new release tag with `HEAD`.
    - The new version should compare the previous release tag with the new
      release tag.
-4. Verify the computed Gradle version:
+4. Update the README dependency examples and Maven coordinates:
+
+```shell
+task release:update-readme VERSION=<version>
+```
+
+5. Verify the computed Gradle version:
 
 ```shell
 ./gradlew -q printVersion
@@ -76,10 +82,10 @@ task release:check VERSION=<version>
 ```
 
 This verifies that the requested version matches Gradle, checks that
-`CHANGELOG.md` contains a matching release section, and runs
-`./gradlew releaseCheck`. `releaseCheck` runs the test checks and assembles the
-artifacts required for a release, including the main jar, sources jar, tests jar,
-and Dokka Javadoc jar.
+`README.md` contains matching dependency coordinates, checks that `CHANGELOG.md`
+contains a matching release section, and runs `./gradlew releaseCheck`.
+`releaseCheck` runs the test checks and assembles the artifacts required for a
+release, including the main jar, sources jar, tests jar, and Dokka Javadoc jar.
 
 After the release pull request has been merged into `master`, publish from the
 local machine:
