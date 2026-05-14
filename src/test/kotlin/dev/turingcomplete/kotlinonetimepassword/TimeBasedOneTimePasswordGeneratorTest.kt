@@ -23,11 +23,22 @@ class TimeBasedOneTimePasswordGeneratorTest {
   @DisplayName("Edge case: 0 code digits")
   fun testZeroCodeDigitsTest() {
     val hmacAlgorithm = HmacAlgorithm.SHA512
-    val config = TimeBasedOneTimePasswordConfig(42, TimeUnit.HOURS, 0, hmacAlgorithm)
+    val config = TimeBasedOneTimePasswordConfig(42, TimeUnit.HOURS, 0, hmacAlgorithm, allowInsecureConfiguration = true)
     val secret = "Leia".toByteArray()
     val timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(secret, config)
 
     assertEquals(0, timeBasedOneTimePasswordGenerator.generate(Date(12345)).length)
+  }
+
+  @Test
+  @DisplayName("Secure default rejects insecure configuration")
+  fun testSecureDefaultRejectsInsecureConfiguration() {
+    Assertions.assertThrows(IllegalArgumentException::class.java) {
+      TimeBasedOneTimePasswordConfig(0, TimeUnit.MINUTES, 6, HmacAlgorithm.SHA1)
+    }
+    Assertions.assertThrows(IllegalArgumentException::class.java) {
+      TimeBasedOneTimePasswordConfig(30, TimeUnit.SECONDS, 5, HmacAlgorithm.SHA1)
+    }
   }
 
   @Test
@@ -72,7 +83,7 @@ class TimeBasedOneTimePasswordGeneratorTest {
     val hmacAlgorithm = HmacAlgorithm.SHA1
     val secret = "Leia".toByteArray()
 
-    val zeroConfig = TimeBasedOneTimePasswordConfig(0, TimeUnit.MINUTES, 6, hmacAlgorithm)
+    val zeroConfig = TimeBasedOneTimePasswordConfig(0, TimeUnit.MINUTES, 6, hmacAlgorithm, allowInsecureConfiguration = true)
     val zeroTimeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(secret, zeroConfig)
     assertEquals("527464", zeroTimeBasedOneTimePasswordGenerator.generate(Date(12334532445)))
   }
@@ -139,7 +150,8 @@ class TimeBasedOneTimePasswordGeneratorTest {
                                        expectedCode: String,
                                        secret: String) {
 
-    val config = TimeBasedOneTimePasswordConfig(timeStep, timeStepUnit, codeDigits, hmacAlgorithm)
+    val config = TimeBasedOneTimePasswordConfig(timeStep, timeStepUnit, codeDigits, hmacAlgorithm,
+                                                allowInsecureConfiguration = codeDigits < 6)
     val timeBasedOneTimePasswordGenerator = TimeBasedOneTimePasswordGenerator(secret.toByteArray(), config)
 
     assertEquals(expectedCode, timeBasedOneTimePasswordGenerator.generate(timestamp))
