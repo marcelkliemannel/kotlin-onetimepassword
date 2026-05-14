@@ -6,11 +6,11 @@ a local machine with the Go Task runner.
 
 ## Branch and Pull Request Rule
 
-All changes to `master` must go through a GitHub pull request. Do not push a
-release commit directly to `master`.
+All changes to `main` must go through a GitHub pull request. Do not push a
+release commit directly to `main`.
 
 The release commit should contain at least the `CHANGELOG.md` release update.
-After that pull request is merged, publish from the reviewed `master` commit.
+After that pull request is merged, publish from the reviewed `main` commit.
 
 ## Version Bump
 
@@ -87,7 +87,7 @@ contains a matching release section, and runs `./gradlew releaseCheck`.
 `releaseCheck` runs the test checks and assembles the artifacts required for a
 release, including the main jar, sources jar, tests jar, and Dokka Javadoc jar.
 
-After the release pull request has been merged into `master`, publish from the
+After the release pull request has been merged into `main`, publish from the
 local machine:
 
 ```shell
@@ -103,7 +103,7 @@ This runs the release checks again and then publishes with signing enabled:
 After the Gradle publish succeeds, close and release the deployment in Sonatype
 Central if it was not released automatically by the compatibility service.
 
-Then tag the reviewed `master` commit:
+Then tag the reviewed `main` commit:
 
 ```shell
 task release:tag VERSION=<version>

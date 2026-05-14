@@ -31,12 +31,12 @@ tasks:
       - ./gradlew releaseCheck
 
   release:tag:
-    desc: Tag the reviewed master release commit and push the tag.
+    desc: Tag the reviewed main release commit and push the tag.
     requires:
       vars: [VERSION]
     cmds:
-      - git checkout master
-      - git pull --ff-only origin master
+      - git checkout main
+      - git pull --ff-only origin main
       - task: release:check
         vars:
           VERSION: '{{.VERSION}}'
@@ -55,7 +55,7 @@ tasks:
       - ./gradlew publishMavenJavaPublicationToSonatypeRepository -Psigning.required=true
 
   release:
-    desc: Publish locally, then tag and push the reviewed master release commit.
+    desc: Publish locally, then tag and push the reviewed main release commit.
     requires:
       vars: [VERSION]
     cmds:
