@@ -1,0 +1,56 @@
+version: '3'
+
+tasks:
+  release:check:
+    desc: Verify that the requested release version matches Gradle and the changelog.
+    requires:
+      vars: [VERSION]
+    cmds:
+      - test "$(./gradlew -q printVersion)" = "{{.VERSION}}"
+      - |
+        awk -v version="{{.VERSION}}" '
+          $0 ~ "^## \\[" version "\\]" {
+            found = 1
+            exit
+          }
+          END {
+            exit found ? 0 : 1
+          }
+        ' CHANGELOG.md
+      - ./gradlew releaseCheck
+
+  release:tag:
+    desc: Tag the reviewed master release commit and push the tag.
+    requires:
+      vars: [VERSION]
+    cmds:
+      - git checkout master
+      - git pull --ff-only origin master
+      - task: release:check
+        vars:
+          VERSION: '{{.VERSION}}'
+      - test -z "$(git tag --list "v{{.VERSION}}")"
+      - git tag "v{{.VERSION}}"
+      - git push origin "v{{.VERSION}}"
+
+  release:publish:
+    desc: Publish the requested release version to Sonatype from the local machine.
+    requires:
+      vars: [VERSION]
+    cmds:
+      - task: release:check
+        vars:
+          VERSION: '{{.VERSION}}'
+      - ./gradlew publishMavenJavaPublicationToSonatypeRepository -Psigning.required=true
+
+  release:
+    desc: Publish locally, then tag and push the reviewed master release commit.
+    requires:
+      vars: [VERSION]
+    cmds:
+      - task: release:publish
+        vars:
+          VERSION: '{{.VERSION}}'
+      - task: release:tag
+        vars:
+          VERSION: '{{.VERSION}}'
