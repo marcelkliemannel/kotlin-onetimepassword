@@ -2,34 +2,50 @@ package dev.turingcomplete.kotlinonetimepassword
 
 import org.apache.commons.codec.binary.Base32
 import java.nio.ByteBuffer
+import java.security.MessageDigest
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import kotlin.experimental.and
-import kotlin.math.pow
 
 /**
- * Generator for the RFC 4226 "HOTP: An HMAC-Based One-Time Password Algorithm"
- * (https://tools.ietf.org/html/rfc4226)
+ * Generator for RFC 4226 HOTP: HMAC-Based One-Time Password Algorithm.
  *
- * @property secret the shared secret as a byte array.
+ * The generator copies [secret] during construction. Later changes to the
+ * provided array do not affect generated codes.
+ *
+ * @property secret the shared secret.
  * @property config the configuration for this generator.
+ *
+ * @throws IllegalArgumentException if [secret] is empty.
+ *
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc4226">RFC 4226</a>
  */
 open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
                                         private val config: HmacOneTimePasswordConfig) {
   // -- Companion Object -------------------------------------------------------------------------------------------- //
   // -- Properties -------------------------------------------------------------------------------------------------- //
   // -- Initialization ---------------------------------------------------------------------------------------------- //
+
+  init {
+    require(secret.isNotEmpty()) { "Secret must not be empty." }
+  }
+
+  private val secretCopy = secret.copyOf()
+
   // -- Exposed Methods --------------------------------------------------------------------------------------------- //
 
   /**
-   * Generates a code representing a HMAC-based one-time password.
+   * Generates an HOTP code for [counter].
    *
-   * @return The generated code for the provided counter value. Note, that the
-   *         code must be represented as a string because it can have trailing
-   *         zeros to meet the code digits requirement from the configuration.
+   * The counter is encoded as an 8-byte big-endian value as specified by RFC
+   * 4226. The returned value is left-padded with zeroes until it reaches
+   * [HmacOneTimePasswordConfig.codeDigits].
+   *
+   * @return the generated code. The code is returned as a string because leading
+   * zeroes are significant.
    */
   fun generate(counter: Long): String {
-    if (config.codeDigits <= 0) {
+    if (config.codeDigits == 0) {
       return ""
     }
 
@@ -48,7 +64,7 @@ open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
     // algorithm = "HmacSHA1"
     // hash = [-1, 12, -126, -80, -86, 107, 104, -30, -14, 83, 77, -97, -42, -5, 121, -101, 82, -104, 65, -59]
     val hash = Mac.getInstance(config.hmacAlgorithm.macAlgorithmName).run {
-      init(SecretKeySpec(secret, "RAW")) // The hard-coded value 'RAW' is specified in the RFC
+      init(SecretKeySpec(secretCopy, "RAW")) // The hard-coded value 'RAW' is specified in the RFC
       doFinal(message.array())
     }
 
@@ -87,7 +103,7 @@ open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
     // binary = [107, 104, -30, -14] = 137359152
     // codeDigits = 6
     // codeInt = 137359152 % 10^6 = 35954
-    val codeInt = binary.int.rem(10.0.pow(config.codeDigits).toInt())
+    val codeInt = binary.int.rem(codeModulo(config.codeDigits))
 
     // The integer code variable may contain a value with fewer digits than the
     // required code digits. Therefore, the final code value is filled with zeros
@@ -101,25 +117,45 @@ open class HmacOneTimePasswordGenerator(private val secret: ByteArray,
   }
 
   /**
-   * Validates the given code.
+   * Validates [code] against the HOTP code generated for [counter].
    *
-   * @param code the code calculated from the challenge to validate.
-   * @param counter the used challenge for the code.
+   * The comparison is performed using [MessageDigest.isEqual] to avoid leaking
+   * information through simple early-exit string comparison.
+   *
+   * @param code the code to validate.
+   * @param counter the counter value used as the HOTP challenge.
+   *
+   * @return `true` if [code] matches the generated code for [counter].
    */
   fun isValid(code: String, counter: Long): Boolean {
-    return code == generate(counter)
+    val expectedCode = generate(counter)
+    return MessageDigest.isEqual(code.toByteArray(Charsets.UTF_8), expectedCode.toByteArray(Charsets.UTF_8))
   }
 
   /**
-   * Creates an [OtpAuthUriBuilder], which pre-configured with the secret, as
-   * well as the algorithm and code digits from the [config].
+   * Creates an [OtpAuthUriBuilder] for an HOTP URI.
+   *
+   * The returned builder is preconfigured with the Base32-encoded secret,
+   * [initialCounter], and the algorithm and digit count from [config].
+   *
+   * @param initialCounter the initial counter value to place in the URI.
    */
   fun otpAuthUriBuilder(initialCounter: Long): OtpAuthUriBuilder.Hotp {
-    return OtpAuthUriBuilder.forHotp(initialCounter, Base32().encode(secret))
+    return OtpAuthUriBuilder.forHotp(initialCounter, Base32().encode(secretCopy))
       .algorithm(config.hmacAlgorithm)
       .digits(config.codeDigits)
   }
 
   // -- Private Methods --------------------------------------------------------------------------------------------- //
+
+  private fun codeModulo(codeDigits: Int): Int {
+    var modulo = 1
+    repeat(codeDigits) {
+      modulo *= 10
+    }
+
+    return modulo
+  }
+
   // -- Inner Type -------------------------------------------------------------------------------------------------- //
 }
