@@ -1,17 +1,7 @@
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.TaskAction
+import dev.turingcomplete.gradle.PrintVersionTask
+import dev.turingcomplete.gradle.UploadSonatypeDeploymentTask
+import org.gradle.api.publish.plugins.PublishingPlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
-abstract class PrintVersionTask : DefaultTask() {
-  @get:Input
-  abstract val versionText: org.gradle.api.provider.Property<String>
-
-  @TaskAction
-  fun printVersion() {
-    logger.quiet(versionText.get())
-  }
-}
 
 plugins {
   `java-library`
@@ -73,6 +63,15 @@ tasks.register<PrintVersionTask>("printVersion") {
   group = HelpTasksPlugin.HELP_GROUP
   description = "Prints the project version."
   versionText.set(releaseVersion)
+}
+
+tasks.register<UploadSonatypeDeploymentTask>("uploadSonatypeDeployment") {
+  group = PublishingPlugin.PUBLISH_TASK_GROUP
+  description = "Uploads the OSSRH compatibility staging repository to Sonatype Central Portal."
+  namespace.set(project.group.toString())
+  username.set(providers.gradleProperty("sonatypeUsername").orElse(""))
+  password.set(providers.gradleProperty("sonatypePassword").orElse(""))
+  publishingType.set(providers.gradleProperty("sonatypePublishingType").orElse("user_managed"))
 }
 
 val testsJar by tasks.registering(Jar::class) {
@@ -154,7 +153,7 @@ val signingSecretKeyRingFileExists = providers.gradleProperty("signing.secretKey
 if (signingRequired || signingInMemoryKey.isPresent || signingSecretKeyRingFileExists) {
   apply(plugin = "signing")
 
-  extensions.configure<org.gradle.plugins.signing.SigningExtension>("signing") {
+  extensions.configure<SigningExtension>("signing") {
     if (signingInMemoryKey.isPresent) {
       useInMemoryPgpKeys(signingInMemoryKey.get(), providers.gradleProperty("signingInMemoryKeyPassword").orNull)
     }

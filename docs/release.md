@@ -94,14 +94,27 @@ local machine:
 task release:publish VERSION=<version>
 ```
 
-This runs the release checks again and then publishes with signing enabled:
+This runs the release checks again, publishes with signing enabled, and then
+uploads the OSSRH compatibility staging repository to Sonatype Central Portal:
 
 ```shell
 ./gradlew publishMavenJavaPublicationToSonatypeRepository -Psigning.required=true
+./gradlew uploadSonatypeDeployment
 ```
 
-After the Gradle publish succeeds, close and release the deployment in Sonatype
-Central if it was not released automatically by the compatibility service.
+The second step is required because Gradle's built-in `maven-publish` plugin is
+a Maven-repository uploader: it sends the individual POM, JAR, source, Javadoc,
+metadata, and signature files with separate `PUT` requests. Sonatype's OSSRH
+compatibility service accepts those files, but it cannot reliably infer when the
+Gradle upload is complete and ready to become a Central Portal deployment. The
+`uploadSonatypeDeployment` task calls Sonatype's manual upload endpoint for the
+project namespace and tells the compatibility service to transfer the staged
+repository into the Portal.
+
+By default, `uploadSonatypeDeployment` creates a user-managed Portal deployment.
+After it succeeds, validate and publish the deployment in Sonatype Central. To
+ask Sonatype to publish automatically after validation, run the upload task with
+`-PsonatypePublishingType=automatic`.
 
 Then tag the reviewed `master` commit:
 

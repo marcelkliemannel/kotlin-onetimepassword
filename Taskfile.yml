@@ -53,6 +53,12 @@ tasks:
         vars:
           VERSION: '{{.VERSION}}'
       - ./gradlew publishMavenJavaPublicationToSonatypeRepository -Psigning.required=true
+      - task: release:upload-sonatype-deployment
+
+  release:upload-sonatype-deployment:
+    desc: Upload the OSSRH compatibility staging repository to Sonatype Central Portal.
+    cmds:
+      - ./gradlew uploadSonatypeDeployment
 
   release:
     desc: Publish locally, then tag and push the reviewed master release commit.
