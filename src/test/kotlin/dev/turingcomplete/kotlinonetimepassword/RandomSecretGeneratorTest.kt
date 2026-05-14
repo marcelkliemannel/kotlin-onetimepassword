@@ -1,9 +1,6 @@
 package dev.turingcomplete.kotlinonetimepassword
 
-import dev.turingcomplete.kotlinonetimepassword.HmacAlgorithm
-import dev.turingcomplete.kotlinonetimepassword.RandomSecretGenerator
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assumptions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -19,6 +16,14 @@ class RandomSecretGeneratorTest {
     HmacAlgorithm.values().forEach {
       val randomSecret = RandomSecretGenerator().createRandomSecret(it)
       Assertions.assertEquals(it.hashBytes, randomSecret.size)
+    }
+  }
+
+  @Test
+  @DisplayName("Reject empty secrets")
+  fun testRejectEmptySecrets() {
+    Assertions.assertThrows(IllegalArgumentException::class.java) {
+      RandomSecretGenerator().createRandomSecret(0)
     }
   }
 
