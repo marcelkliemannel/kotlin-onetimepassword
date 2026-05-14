@@ -5,12 +5,16 @@ plugins {
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.dokka)
   alias(libs.plugins.dokka.javadoc)
+  alias(libs.plugins.spotless.changelog)
   `maven-publish`
   signing
 }
 
-group = "dev.turingcomplete"
-version = "2.4.1"
+version = spotlessChangelog.versionNext
+
+spotlessChangelog {
+  tagPrefix(providers.gradleProperty("changelog.tagPrefix").get())
+}
 
 java {
   sourceCompatibility = JavaVersion.VERSION_1_8
