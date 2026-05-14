@@ -1,41 +1,64 @@
-# Compiled class file
+# Gradle / Kotlin
+.gradle/
+.kotlin/
+build/
+**/build/
+out/
+**/out/
 *.class
+gradle-app.setting
+.gradletasknamecache
+local.properties
 
-# Log file
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Codex / local agent state
+.codex/
+.codex-*/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Logs and JVM crash dumps
 *.log
+hs_err_pid*
+replay_pid*
 
-# BlueJ files
-*.ctxt
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.local
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+# Archives and generated packages
 *.jar
+# Keep the Gradle wrapper executable jar versioned.
 !gradle/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 *.zip
+*.tar
 *.tar.gz
+*.tgz
 *.rar
 
-# Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-
-# Output
-build/
-out/
-
-# Intellij
-.idea
-
-# Gradle
-.gradle
-/build/
-gradle-app.setting
-!gradle-wrapper.jar
-.gradletasknamecache
-local.properties
-
-# Mac
-.DS_Store
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
