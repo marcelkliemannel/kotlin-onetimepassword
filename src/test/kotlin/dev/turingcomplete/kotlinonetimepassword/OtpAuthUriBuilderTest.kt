@@ -2,6 +2,7 @@ package dev.turingcomplete.kotlinonetimepassword
 
 import org.apache.commons.codec.binary.Base32
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -57,10 +58,17 @@ class OtpAuthUriBuilderTest {
 
   @Test
   fun testDigitsParameter() {
-    assertEquals("otpauth://totp/?digits=333&secret=$BASE32_SECRET_REMOVED_PADDING",
+    assertEquals("otpauth://totp/?digits=8&secret=$BASE32_SECRET_REMOVED_PADDING",
                  OtpAuthUriBuilder.forTotp(BASE32_SECRET)
-                   .digits(333)
+                   .digits(8)
                    .buildToString())
+  }
+
+  @Test
+  fun testRejectInvalidDigitsParameter() {
+    assertThrows(IllegalArgumentException::class.java) {
+      OtpAuthUriBuilder.forTotp(BASE32_SECRET).digits(333)
+    }
   }
 
   @Test
@@ -132,7 +140,6 @@ class OtpAuthUriBuilderTest {
 
   @ParameterizedTest
   @CsvSource(value = [
-    ", ", // null will be transformed to empty string
     "a, ME", // ME======
     "aa, MFQQ", // MFQQ====
     "aaa, MFQWC", // MFQWC===
@@ -147,6 +154,16 @@ class OtpAuthUriBuilderTest {
     val otpAuthUri = OtpAuthUriBuilder.forTotp(Base32().encode((secret ?: "").toByteArray())).buildToString()
     val actualSecretParameterValue = secretParameterRegex.matchEntire(otpAuthUri)!!.groups[1]!!.value
     assertEquals(expectedSecretParameterValue ?: "", actualSecretParameterValue)
+  }
+
+  @Test
+  fun testRejectInvalidBase32Secret() {
+    assertThrows(IllegalArgumentException::class.java) {
+      OtpAuthUriBuilder.forTotp("ABC&issuer=evil".toByteArray())
+    }
+    assertThrows(IllegalArgumentException::class.java) {
+      OtpAuthUriBuilder.forTotp(ByteArray(0))
+    }
   }
 
   // -- Private Methods --------------------------------------------------------------------------------------------- //
