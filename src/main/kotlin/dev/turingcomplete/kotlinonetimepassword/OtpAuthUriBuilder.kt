@@ -5,36 +5,36 @@ import dev.turingcomplete.kotlinonetimepassword.OtpAuthUriBuilder.Companion.forT
 import java.io.ByteArrayOutputStream
 import java.net.URI
 import java.net.URLEncoder
-import java.nio.ByteBuffer
-import java.nio.CharBuffer
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
- * A builder to create an OTP Auth URI as defined in
+ * Builder for OTP Auth URIs as defined by the
  * [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format).
- * This URI contains all necessary information for a TOTP/HOTP client to set up
- * the code generation.
  *
- * This URI can be used, for example, to be encoded into a QR code.
+ * OTP Auth URIs contain the metadata needed by authenticator apps to configure
+ * TOTP or HOTP code generation. They are commonly encoded as QR codes.
  *
- * An example OTP Auth URI would be:
+ * Example:
  * ```text
  * otpauth://totp/Company:John@company.com?secret=SGWY3DPESRKFPHH&issuer=Company&digits=8&algorithm=SHA1
  * ```
  *
  * Use the factory methods [forTotp]/[TimeBasedOneTimePasswordGenerator.otpAuthUriBuilder]
- * or [forHotp]/[HmacOneTimePasswordGenerator.otpAuthUriBuilder] to create a/an
- * TOTP/HOTP specific instance of an [OtpAuthUriBuilder].
+ * or [forHotp]/[HmacOneTimePasswordGenerator.otpAuthUriBuilder] to create a
+ * TOTP- or HOTP-specific builder.
  *
- * @param removePaddingFromBase32Secret if set to `true`, the Base32 padding
- * character `=` will be removed from the `secret` URI parameter (e.g.,
- * `MFQWC===` will be transformed to `MFQWC`.), this is required by the
- * specification.
+ * @param type the OTP Auth URI type, usually `totp` or `hotp`.
+ * @param base32Secret the shared secret as Base32-encoded bytes.
+ * @param removePaddingFromBase32Secret whether Base32 padding characters (`=`)
+ * should be removed from the `secret` URI parameter. The key URI format expects
+ * an unpadded Base32 value.
  * @property charset the [Charset] to be used at various places inside this
- * builder, for example, for the URL encoding.
+ * builder, for example URL encoding and byte-array conversion.
+ *
+ * @throws IllegalArgumentException if [base32Secret] is not a valid non-empty
+ * Base32 value.
  *
  * @see OtpAuthUriBuilder.Totp
  * @see OtpAuthUriBuilder.Hotp
@@ -46,10 +46,15 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
   // -- Companion Object -------------------------------------------------------------------------------------------- //
 
   companion object {
+    private val BASE32_SECRET_REGEX = Regex("^[A-Z2-7]+={0,6}$")
+
     /**
-     * Creates a new [OtpAuthUriBuilder] for a __TOTP__ OTP Auth URI.
+     * Creates a new builder for a TOTP OTP Auth URI.
      *
-     * @param base32Secret the secret as a Base32 encoded [ByteArray].
+     * @param base32Secret the secret as Base32-encoded bytes.
+     *
+     * @throws IllegalArgumentException if [base32Secret] is not a valid
+     * non-empty Base32 value.
      *
      * @see TimeBasedOneTimePasswordGenerator.otpAuthUriBuilder
      */
@@ -58,9 +63,13 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
     }
 
     /**
-     * Creates a new [OtpAuthUriBuilder] for a __HOTP__ OTP Auth URI.
+     * Creates a new builder for an HOTP OTP Auth URI.
      *
-     * @param base32Secret the secret as a Base32 encoded [ByteArray].
+     * @param initialCounter the initial HOTP counter value.
+     * @param base32Secret the secret as Base32-encoded bytes.
+     *
+     * @throws IllegalArgumentException if [initialCounter] is negative or
+     * [base32Secret] is not a valid non-empty Base32 value.
      *
      * @see HmacOneTimePasswordGenerator.otpAuthUriBuilder
      */
@@ -78,26 +87,34 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
   // -- Initialization ---------------------------------------------------------------------------------------------- //
 
   init {
-    this.base32Secret = if (removePaddingFromBase32Secret) removePaddingFromBase32Secret(base32Secret) else base32Secret
+    validateBase32Secret(base32Secret)
+    this.base32Secret = if (removePaddingFromBase32Secret) removePaddingFromBase32Secret(base32Secret) else base32Secret.copyOf()
   }
 
   // -- Exposed Methods --------------------------------------------------------------------------------------------- //
 
   /**
-   * Sets the label path part of the URI, which consist of an account name
-   * and an optional issuer. Both values will be separated by a colon (`:`),
-   * which can be URL encoded by setting the parameter [encodeSeparator].
+   * Sets the label path part of the URI.
    *
-   * The issuer is a provider or service to which the account name (for
-   * which the OTP code gets used) belongs to.
+   * The label consists of an account name and an optional issuer. If an issuer
+   * is provided, both values are separated by a colon (`:`). Set
+   * [encodeSeparator] to `true` to URL-encode that separator as `%3A`.
    *
-   * The issuer and account name will be URL encoded.
+   * The issuer is the provider or service the account belongs to. Both issuer
+   * and account name are URL-encoded.
    *
-   * The OTP Auth URI specification recommends to always set this path part
-   * with both values. And if it is set, the [issuer] parameter should also be
-   * set.
+   * The OTP Auth URI specification recommends setting both label values and
+   * mirroring the issuer with [issuer].
    *
-   * This is an _optional_ path part.
+   * @param accountName the account name shown by authenticator apps.
+   * @param issuer the optional provider or service name.
+   * @param encodeSeparator whether the separator between issuer and account name
+   * should be URL-encoded.
+   *
+   * @return this builder.
+   *
+   * @throws IllegalArgumentException if [accountName] or [issuer] contains a
+   * literal or URL-encoded colon.
    */
   fun label(accountName: String, issuer: String?, encodeSeparator: Boolean = false): S {
     if (accountName.contains(":")
@@ -121,15 +138,15 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
   }
 
   /**
-   * Sets the `issuer` query parameter, which indicates the provider or service
-   * the account (for which the OTP code gets used) belongs to.
+   * Sets the `issuer` query parameter.
    *
-   * The OTP Auth URI specification recommends to always set this parameter. And
-   * if it is set, the [label] path part should also be set.
+   * The issuer identifies the provider or service the account belongs to. The
+   * OTP Auth URI specification recommends setting this parameter and also
+   * including the same issuer in [label].
    *
    * The value will be URL encoded.
    *
-   * This is an _optional_ parameter.
+   * @return this builder.
    */
   fun issuer(issuer: String): S {
     parameters["issuer"] = URLEncoder.encode(issuer, StandardCharsets.UTF_8.name())
@@ -147,7 +164,7 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
    *
    * The Google Authenticator may ignore this value and always uses `SHA1`.
    *
-   * This is an _optional_ parameter.
+   * @return this builder.
    */
   fun algorithm(algorithm: HmacAlgorithm): S {
     parameters["algorithm"] = algorithm.name
@@ -157,17 +174,26 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
   }
 
   /**
-   * Sets the `digits` query parameter, which is the length of the generated
-   * code.
+   * Sets the `digits` query parameter.
    *
-   * This value is equivalent to the [TimeBasedOneTimePasswordConfig.codeDigits] and
-   * [HmacOneTimePasswordConfig.codeDigits] configuration.
+   * This value is the length of the generated code and is equivalent to
+   * [TimeBasedOneTimePasswordConfig.codeDigits] and
+   * [HmacOneTimePasswordConfig.codeDigits].
    *
    * The Google Authenticator may ignore this value and always uses `6`.
    *
-   * This is an _optional_ parameter.
+   * @param digits the number of digits in generated codes.
+   *
+   * @return this builder.
+   *
+   * @throws IllegalArgumentException if [digits] is outside the supported URI
+   * range.
    */
   fun digits(digits: Int): S {
+    require(digits in 1..HmacOneTimePasswordConfig.MAX_CODE_DIGITS) {
+      "Number of code digits must be between 1 and ${HmacOneTimePasswordConfig.MAX_CODE_DIGITS}."
+    }
+
     parameters["digits"] = digits.toString()
 
     @Suppress("UNCHECKED_CAST")
@@ -177,8 +203,9 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
   /**
    * Builds the final OTP Auth URI as a [String].
    *
-   * Warning: Handling the URI as a string may leak the secret into the String
-   * pool of the JVM. Consider using [buildToByteArray] instead.
+   * Warning: the returned string contains the shared secret. Prefer
+   * [buildToByteArray] when you want to avoid keeping secrets in immutable JVM
+   * strings.
    */
   fun buildToString(): String {
     return buildUriWithoutSecret(mapOf(Pair("secret", base32Secret.toString(charset))))
@@ -187,8 +214,9 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
   /**
    * Builds the final OTP Auth URI as a [URI].
    *
-   * Warning: Handling the URI as a string may leak the secret into the String
-   * pool of the JVM. Consider using [buildToByteArray] instead.
+   * Warning: creating a [URI] requires a string representation that contains the
+   * shared secret. Prefer [buildToByteArray] when you want to avoid keeping
+   * secrets in immutable JVM strings.
    */
   fun buildToUri(): URI {
     return URI(buildToString())
@@ -196,6 +224,9 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
 
   /**
    * Builds the final OTP Auth URI as a [ByteArray].
+   *
+   * This method appends the Base32 secret directly to the output bytes and
+   * avoids creating a complete URI string containing the secret.
    */
   fun buildToByteArray(): ByteArray {
     return ByteArrayOutputStream().apply {
@@ -213,31 +244,13 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
     return "otpauth://$type/${if (label != null) label else ""}$query"
   }
 
+  private fun validateBase32Secret(base32Secret: ByteArray) {
+    val base32SecretString = base32Secret.toString(charset)
+    require(BASE32_SECRET_REGEX.matches(base32SecretString)) { "Secret must be a non-empty Base32-encoded value." }
+  }
+
   private fun removePaddingFromBase32Secret(base32Secret: ByteArray): ByteArray {
-    val base32SecretByteBuffer = ByteBuffer.wrap(base32Secret)
-    val base32SecretCharBuffer: CharBuffer = charset.decode(base32SecretByteBuffer)
-
-    var cleanedBase32SecretLength = 0
-    val cleanedBase32SecretCharBuffer = CharBuffer.allocate(base32SecretCharBuffer.length)
-    for(i in base32SecretCharBuffer.indices) {
-      if (base32SecretCharBuffer[i] != '=') {
-        cleanedBase32SecretLength++
-        cleanedBase32SecretCharBuffer.put(i, base32SecretCharBuffer[i])
-      }
-    }
-
-    val cleanedBase32SecretByteBuffer = charset.encode(cleanedBase32SecretCharBuffer.subSequence(0, cleanedBase32SecretLength))
-    val cleanedBase32Secret = Arrays.copyOfRange(cleanedBase32SecretByteBuffer.array(),
-                                                 cleanedBase32SecretByteBuffer.position(),
-                                                 cleanedBase32SecretByteBuffer.limit())
-
-    // Clean up
-    // `base32SecretByteBuffer` holds a reference to the original array
-    Arrays.fill(base32SecretCharBuffer.array(), '-')
-    Arrays.fill(cleanedBase32SecretCharBuffer.array(), '-')
-    Arrays.fill(cleanedBase32SecretByteBuffer.array(), 0.toByte())
-
-    return cleanedBase32Secret
+    return base32Secret.toString(charset).trimEnd('=').toByteArray(charset)
   }
 
   // -- Inner Type -------------------------------------------------------------------------------------------------- //
@@ -247,6 +260,8 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
    *
    * An instance should be created via [forTotp]
    * or [TimeBasedOneTimePasswordGenerator.otpAuthUriBuilder].
+   *
+   * @param base32Secret the secret as Base32-encoded bytes.
    */
   class Totp(base32Secret: ByteArray) : OtpAuthUriBuilder<Totp>("totp", base32Secret) {
 
@@ -257,9 +272,18 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
      * This value is equivalent to the [TimeBasedOneTimePasswordConfig.timeStep] and
      * [TimeBasedOneTimePasswordConfig.timeStepUnit] configuration.
      *
-     * This is an _optional_ parameter.
+     * @param timeStep the size of one TOTP time step.
+     * @param timeStepUnit the unit used to convert [timeStep] to seconds.
+     *
+     * @return this builder.
+     *
+     * @throws IllegalArgumentException if the converted period is less than one
+     * second.
      */
     fun period(timeStep: Long, timeStepUnit: TimeUnit): Totp {
+      require(timeStep > 0) { "Time step must be greater than zero." }
+      require(timeStepUnit.toSeconds(timeStep) > 0) { "Time step must be at least one second." }
+
       parameters["period"] = timeStepUnit.toSeconds(timeStep).toString()
       return this
     }
@@ -273,7 +297,8 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
    * An instance should be created via [forHotp]
    * or [HmacOneTimePasswordGenerator.otpAuthUriBuilder].
    *
-   * @param initialCounter the initial [counter] value.
+   * @param initialCounter the initial HOTP counter value.
+   * @param base32Secret the secret as Base32-encoded bytes.
    */
   class Hotp(initialCounter: Long, base32Secret: ByteArray) : OtpAuthUriBuilder<Hotp>("hotp", base32Secret) {
 
@@ -284,11 +309,18 @@ open class OtpAuthUriBuilder<S : OtpAuthUriBuilder<S>>(private val type: String,
     /**
      * Sets the `counter` parameter, which defines the initial counter value.
      *
-     * This is a _required_ parameter and will be initially set by the
-     * constructor parameter `initialCounter`. Calling this method will
-     * overwrite the initial value from the constructor.
+     * This is a required HOTP parameter and is initially set by the constructor.
+     * Calling this method overwrites that initial value.
+     *
+     * @param initialCounter the initial HOTP counter value.
+     *
+     * @return this builder.
+     *
+     * @throws IllegalArgumentException if [initialCounter] is negative.
      */
     fun counter(initialCounter: Long): Hotp {
+      require(initialCounter >= 0) { "Counter must not be negative." }
+
       parameters["counter"] = initialCounter.toString()
       return this
     }
