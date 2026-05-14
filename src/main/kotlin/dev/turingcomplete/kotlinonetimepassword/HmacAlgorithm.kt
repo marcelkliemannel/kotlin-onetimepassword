@@ -1,26 +1,30 @@
 package dev.turingcomplete.kotlinonetimepassword
 
 /**
- * Available "keyed-hash message authentication code" (HMAC) algorithms.
- * See: https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#Mac
+ * HMAC algorithms supported by HOTP and TOTP generation.
  *
- * @property macAlgorithmName the name of the algorithm used for
- *                            [javax.crypto.Mac.getInstance(java.lang.String)]
- * @property hashBytes the length of the returned hash produced by the algorithm.
+ * @property macAlgorithmName the JCA standard algorithm name passed to
+ * [javax.crypto.Mac.getInstance].
+ * @property hashBytes the number of bytes produced by the algorithm's HMAC
+ * output.
+ *
+ * @see <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#Mac">Java Cryptography Architecture Standard Algorithm Names</a>
  */
 enum class HmacAlgorithm(val macAlgorithmName: String, val hashBytes: Int) {
   // -- Values ------------------------------------------------------------------------------------------------------ //
 
   /**
-   * SHA1 HMAC with a hash of 20-bytes
+   * HMAC-SHA-1 with a 20-byte output.
    */
   SHA1("HmacSHA1", 20),
+
   /**
-   * SHA256 HMAC with a hash of 32-bytes
+   * HMAC-SHA-256 with a 32-byte output.
    */
   SHA256("HmacSHA256", 32),
+
   /**
-   * SHA512 HMAC with a hash of 64-bytes
+   * HMAC-SHA-512 with a 64-byte output.
    */
   SHA512("HmacSHA512", 64)
 
