@@ -116,3 +116,63 @@ task release VERSION=<version>
 ```
 
 Verify the artifact appears on Maven Central before announcing the release.
+
+## Generate and Publish a New Signing Key
+
+Maven Central requires signed artifacts. Generate a GPG key pair, keep the
+private key for Gradle signing, and publish only the public key so Sonatype can
+validate uploaded `.asc` signatures.
+
+Generate a new key pair:
+
+```shell
+gpg --full-generate-key
+```
+
+Use a signing-capable RSA key and choose the project publishing identity. Set a
+strong passphrase; this is the value for `signingInMemoryKeyPassword`.
+
+List the secret keys and copy the key ID or fingerprint:
+
+```shell
+gpg --list-secret-keys --keyid-format LONG
+```
+
+Export the private key for Gradle in-memory signing:
+
+```shell
+gpg --armor --export-secret-keys <key-id>
+```
+
+The exported key contains multiple lines. Convert it to a single
+`gradle.properties` value with escaped line breaks:
+
+```shell
+gpg --armor --export-secret-keys <key-id> | awk '{printf "%s\\n", $0}'
+```
+
+Put the full output into `~/.gradle/gradle.properties` as
+`signingInMemoryKey`. The property must be one physical line:
+
+```properties
+signingInMemoryKey=-----BEGIN PGP PRIVATE KEY BLOCK-----\n...\n-----END PGP PRIVATE KEY BLOCK-----\n
+signingInMemoryKeyPassword=<gpg-key-password>
+```
+
+Do not commit the private key.
+
+Publish the public key to a keyserver supported by Sonatype:
+
+```shell
+gpg --keyserver keyserver.ubuntu.com --send-keys <key-id>
+```
+
+Verify that the public key can be fetched:
+
+```shell
+gpg --keyserver keyserver.ubuntu.com --recv-keys <key-id>
+```
+
+The Sonatype Central namespace page is only for namespace and publishing access
+management. The PGP private key is never uploaded there; Sonatype validates
+artifact signatures by resolving the matching public key from the keyserver.
