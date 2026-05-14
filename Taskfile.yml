@@ -8,8 +8,7 @@ tasks:
     cmds:
       - |
         perl -0pi -e 's/(dev\.turingcomplete:kotlin-onetimepassword:)[0-9]+\.[0-9]+\.[0-9]+/${1}{{.VERSION}}/g;
-                      s|(<version>)[0-9]+\.[0-9]+\.[0-9]+(</version>)|${1}{{.VERSION}}${2}|g;
-                      s/(\*\*Version:\*\* `)[0-9]+\.[0-9]+\.[0-9]+(`)/${1}{{.VERSION}}${2}/g' README.md
+                      s|(<version>)[0-9]+\.[0-9]+\.[0-9]+(</version>)|${1}{{.VERSION}}${2}|g' README.md
 
   release:check:
     desc: Verify that the requested release version matches Gradle, README, and the changelog.
@@ -19,7 +18,6 @@ tasks:
       - test "$(./gradlew -q printVersion)" = "{{.VERSION}}"
       - rg -F "dev.turingcomplete:kotlin-onetimepassword:{{.VERSION}}" README.md
       - rg -F "<version>{{.VERSION}}</version>" README.md
-      - rg -F "**Version:** `{{.VERSION}}`" README.md
       - |
         awk -v version="{{.VERSION}}" '
           $0 ~ "^## \\[" version "\\]" {
