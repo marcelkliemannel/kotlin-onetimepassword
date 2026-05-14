@@ -1,4 +1,17 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+abstract class PrintVersionTask : DefaultTask() {
+  @get:Input
+  abstract val versionText: org.gradle.api.provider.Property<String>
+
+  @TaskAction
+  fun printVersion() {
+    logger.quiet(versionText.get())
+  }
+}
 
 plugins {
   `java-library`
@@ -7,7 +20,6 @@ plugins {
   alias(libs.plugins.dokka.javadoc)
   alias(libs.plugins.spotless.changelog)
   `maven-publish`
-  signing
 }
 
 version = spotlessChangelog.versionNext
@@ -55,6 +67,14 @@ tasks.withType<Test>().configureEach {
   useJUnitPlatform()
 }
 
+val releaseVersion = version.toString()
+
+tasks.register<PrintVersionTask>("printVersion") {
+  group = HelpTasksPlugin.HELP_GROUP
+  description = "Prints the project version."
+  versionText.set(releaseVersion)
+}
+
 val testsJar by tasks.registering(Jar::class) {
   group = LifecycleBasePlugin.BUILD_GROUP
   description = "Assembles a jar archive containing the test classes."
@@ -68,6 +88,12 @@ val dokkaJavadocJar by tasks.registering(Jar::class) {
   dependsOn(tasks.named("dokkaGeneratePublicationJavadoc"))
   archiveClassifier.set("javadoc")
   from(tasks.named("dokkaGeneratePublicationJavadoc"))
+}
+
+tasks.register("releaseCheck") {
+  group = LifecycleBasePlugin.VERIFICATION_GROUP
+  description = "Runs the checks and assembles all artifacts required for a release."
+  dependsOn(tasks.named("check"), tasks.named("assemble"), testsJar, dokkaJavadocJar)
 }
 
 publishing {
@@ -110,7 +136,7 @@ publishing {
   repositories {
     maven {
       name = "sonatype"
-      url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+      url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
       credentials {
         username = providers.gradleProperty("sonatypeUsername").orNull
         password = providers.gradleProperty("sonatypePassword").orNull
@@ -119,7 +145,21 @@ publishing {
   }
 }
 
-signing {
-  isRequired = providers.gradleProperty("signing.required").map(String::toBoolean).getOrElse(false)
-  sign(publishing.publications["mavenJava"])
+val signingInMemoryKey = providers.gradleProperty("signingInMemoryKey")
+val signingRequired = providers.gradleProperty("signing.required").map(String::toBoolean).getOrElse(false)
+val signingSecretKeyRingFileExists = providers.gradleProperty("signing.secretKeyRingFile")
+  .map { file(it).isFile }
+  .getOrElse(false)
+
+if (signingRequired || signingInMemoryKey.isPresent || signingSecretKeyRingFileExists) {
+  apply(plugin = "signing")
+
+  extensions.configure<org.gradle.plugins.signing.SigningExtension>("signing") {
+    if (signingInMemoryKey.isPresent) {
+      useInMemoryPgpKeys(signingInMemoryKey.get(), providers.gradleProperty("signingInMemoryKeyPassword").orNull)
+    }
+
+    isRequired = signingRequired
+    sign(publishing.publications["mavenJava"])
+  }
 }
