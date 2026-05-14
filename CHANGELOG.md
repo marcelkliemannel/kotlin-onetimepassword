@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-05-14
+
 ### Added
 
 - Added secure default validation for HOTP and TOTP configuration values.
@@ -101,7 +103,8 @@ All notable changes to this project are documented in this file.
 - Added first HOTP/TOTP implementation.
 - Added project README, manifest, and license.
 
-[Unreleased]: https://github.com/marcelkliemannel/kotlin-onetimepassword/compare/v2.4.1...HEAD
+[Unreleased]: https://github.com/marcelkliemannel/kotlin-onetimepassword/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/marcelkliemannel/kotlin-onetimepassword/compare/v2.4.1...v3.0.0
 [2.4.1]: https://github.com/marcelkliemannel/kotlin-onetimepassword/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/marcelkliemannel/kotlin-onetimepassword/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/marcelkliemannel/kotlin-onetimepassword/compare/v2.2.0...v2.3.0
